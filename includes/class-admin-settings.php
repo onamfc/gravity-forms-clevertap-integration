@@ -10,14 +10,14 @@ if (!defined('ABSPATH')) {
 class CTGF_Admin_Settings {
     
     public function __construct() {
-        add_action('admin_menu', array($this, 'add_admin_menu'));
+        add_action('admin_menu', array($this, 'add_admin_menu'), 99);
         add_action('admin_init', array($this, 'register_settings'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
         add_action('wp_ajax_ctgf_test_connection', array($this, 'test_connection'));
     }
     
     public function add_admin_menu() {
-        add_submenu_page(
+        $page_hook = add_submenu_page(
             'gf_edit_forms',
             'CleverTap Integration',
             'CleverTap Integration',
@@ -26,10 +26,8 @@ class CTGF_Admin_Settings {
             array($this, 'settings_page')
         );
         
-        // Debug: Let's verify the menu was added
-        if (get_option('ctgf_enable_logging')) {
-            error_log('CTGF: Admin menu added');
-        }
+        // Debug: Log menu registration attempt
+        error_log('CTGF: Attempted to add admin menu with slug ctgf-settings. Page hook: ' . ($page_hook ? $page_hook : 'false'));
     }
     
     public function enqueue_admin_scripts($hook) {

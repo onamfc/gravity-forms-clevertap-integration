@@ -57,33 +57,6 @@ function ctgf_init() {
     new CTGF_Submission_Handler();
 }
 
-// Add a direct hook to ensure admin menu is registered
-add_action('admin_menu', 'ctgf_ensure_admin_menu', 20);
-
-function ctgf_ensure_admin_menu() {
-    // Only run if Gravity Forms is active and we haven't already added the menu
-    if (class_exists('GFForms') && !menu_page_url('ctgf-settings', false)) {
-        add_submenu_page(
-            'gf_edit_forms',
-            'CleverTap Integration',
-            'CleverTap Integration',
-            'manage_options',
-            'ctgf-settings',
-            'ctgf_settings_page_callback'
-        );
-    }
-}
-
-// Callback function for the settings page
-function ctgf_settings_page_callback() {
-    // Create an instance of the admin settings class and call the settings page method
-    require_once CTGF_PLUGIN_PATH . 'includes/class-clevertap-api.php';
-    require_once CTGF_PLUGIN_PATH . 'includes/class-admin-settings.php';
-    
-    $admin_settings = new CTGF_Admin_Settings();
-    $admin_settings->settings_page();
-}
-
 // Add admin notices for debugging
 add_action('admin_notices', 'ctgf_debug_notices');
 
