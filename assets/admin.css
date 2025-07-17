@@ -1,0 +1,51 @@
+/* Admin Styles for CleverTap Gravity Forms Integration */
+
+.ctgf-settings-page {
+    max-width: 800px;
+}
+
+.ctgf-test-result {
+    margin-top: 10px;
+}
+
+.ctgf-form-settings {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.ctgf-form-settings h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.ctgf-field-mapping {
+    background: #fff;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    margin-bottom: 15px;
+}
+
+.ctgf-status-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.ctgf-status-active {
+    background-color: #46b450;
+}
+
+.ctgf-status-inactive {
+    background-color: #dc3232;
+}
+
+.ctgf-help-text {
+    font-style: italic;
+    color: #666;
+    margin-top: 5px;
+}
