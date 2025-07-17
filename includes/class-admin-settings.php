@@ -17,7 +17,7 @@ class CTGF_Admin_Settings {
     }
     
     public function add_admin_menu() {
-        $hook = add_submenu_page(
+        add_submenu_page(
             'gf_edit_forms',
             'CleverTap Integration',
             'CleverTap Integration',
@@ -25,18 +25,6 @@ class CTGF_Admin_Settings {
             'ctgf-settings',
             array($this, 'settings_page')
         );
-        
-        // Ensure the page is properly registered
-        if ($hook) {
-            add_action('load-' . $hook, array($this, 'load_settings_page'));
-        }
-    }
-    
-    public function load_settings_page() {
-        // This ensures the page is properly loaded
-        if (!current_user_can('manage_options')) {
-            wp_die(__('You do not have sufficient permissions to access this page.'));
-        }
     }
     
     public function enqueue_admin_scripts($hook) {

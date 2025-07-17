@@ -48,10 +48,8 @@ function ctgf_init() {
     require_once CTGF_PLUGIN_PATH . 'includes/class-submission-handler.php';
     
     // Initialize classes
-    if (is_admin()) {
-        new CTGF_Admin_Settings();
-        new CTGF_Form_Settings();
-    }
+    new CTGF_Admin_Settings();
+    new CTGF_Form_Settings();
     
     // Always initialize submission handler
     new CTGF_Submission_Handler();
