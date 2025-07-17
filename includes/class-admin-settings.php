@@ -25,6 +25,11 @@ class CTGF_Admin_Settings {
             'ctgf-settings',
             array($this, 'settings_page')
         );
+        
+        // Debug: Let's verify the menu was added
+        if (get_option('ctgf_enable_logging')) {
+            error_log('CTGF: Admin menu added');
+        }
     }
     
     public function enqueue_admin_scripts($hook) {
