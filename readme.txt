@@ -66,10 +66,6 @@ Yes! Each form can have its own tag configuration in the form settings.
 
 No problem! You can easily update the email field mapping in the form settings without touching any code.
 
-= Does this replace my current functionality? =
-
-Yes, once configured, this plugin will handle all the CleverTap integration automatically, so you can remove the manual code from your theme's functions.php file.
-
 == Changelog ==
 
 = 1.0.0 =
