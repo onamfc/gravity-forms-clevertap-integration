@@ -48,9 +48,24 @@ function ctgf_init() {
     require_once CTGF_PLUGIN_PATH . 'includes/class-submission-handler.php';
     
     // Initialize classes
-    new CTGF_Admin_Settings();
-    new CTGF_Form_Settings();
+    if (is_admin()) {
+        new CTGF_Admin_Settings();
+        new CTGF_Form_Settings();
+    }
+    
+    // Always initialize submission handler
     new CTGF_Submission_Handler();
+}
+
+// Add admin notices for debugging
+add_action('admin_notices', 'ctgf_debug_notices');
+
+function ctgf_debug_notices() {
+    if (isset($_GET['page']) && $_GET['page'] === 'ctgf-settings') {
+        if (!class_exists('GFForms')) {
+            echo '<div class="notice notice-error"><p>Gravity Forms is not active or installed.</p></div>';
+        }
+    }
 }
 
 // Activation hook
