@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CleverTap Gravity Forms Integration
  * Description: Integrates Gravity Forms with CleverTap for seamless user tracking and tagging
- * Version: 1.0.5
+ * Version: 1.0.6
  * Author: Brandon Estrella
  * Requires at least: 5.0
  * Tested up to: 6.4
