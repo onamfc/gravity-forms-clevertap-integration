@@ -12,7 +12,16 @@ class CTGF_Form_Settings {
     public function __construct() {
         add_action('gform_form_settings', array($this, 'add_form_settings'), 10, 2);
         add_action('gform_pre_form_settings_save', array($this, 'save_form_settings'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_form_settings_scripts'));
         add_action('wp_ajax_ctgf_get_form_fields', array($this, 'get_form_fields'));
+    }
+    
+    public function enqueue_form_settings_scripts($hook) {
+        // Check if we're on the Gravity Forms edit form page
+        if ($hook === 'forms_page_gf_edit_forms' || strpos($hook, 'gf_edit_forms') !== false) {
+            wp_enqueue_script('ctgf-admin-js', CTGF_PLUGIN_URL . 'assets/admin.js', array('jquery'), CTGF_VERSION, true);
+            wp_enqueue_style('ctgf-admin-css', CTGF_PLUGIN_URL . 'assets/admin.css', array(), CTGF_VERSION);
+        }
     }
     
     public function add_form_settings($settings, $form) {
@@ -36,27 +45,33 @@ class CTGF_Form_Settings {
                     <label for="ctgf_active">Enable CleverTap integration for this form</label>
                 </td>
             </tr>
-            <tr>
-                <th scope="row">
-                    <label for="ctgf_email_field">Email Field</label>
-                </th>
-                <td>
-                    <select id="ctgf_email_field" name="ctgf_email_field">
-                        <option value="">Select Email Field</option>
-                        ' . $this->get_email_field_options($form, $email_field) . '
-                    </select>
-                    <p class="description">Select the field that contains the user\'s email address</p>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="ctgf_tag">CleverTap Tag</label>
-                </th>
-                <td>
-                    <input type="text" id="ctgf_tag" name="ctgf_tag" value="' . esc_attr($tag) . '" class="regular-text" />
-                    <p class="description">The tag to add to the user in CleverTap (e.g., "Newsletter Signup")</p>
-                </td>
-            </tr>
+        </table>
+        <div class="ctgf-config-fields">
+            <table class="form-table">
+                <tr>
+                    <th scope="row">
+                        <label for="ctgf_email_field">Email Field</label>
+                    </th>
+                    <td>
+                        <select id="ctgf_email_field" name="ctgf_email_field">
+                            <option value="">Select Email Field</option>
+                            ' . $this->get_email_field_options($form, $email_field) . '
+                        </select>
+                        <p class="description">Select the field that contains the user\'s email address</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <label for="ctgf_tag">CleverTap Tag</label>
+                    </th>
+                    <td>
+                        <input type="text" id="ctgf_tag" name="ctgf_tag" value="' . esc_attr($tag) . '" class="regular-text" />
+                        <p class="description">The tag to add to the user in CleverTap (e.g., "Newsletter Signup")</p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <table class="form-table">
         </table>';
         
         return $settings;
