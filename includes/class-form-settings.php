@@ -50,6 +50,11 @@ class CTGF_Form_Settings {
             wp_die('Form not found');
         }
         
+        // Handle form submission first
+        if (isset($_POST['ctgf_save_settings']) && wp_verify_nonce($_POST['ctgf_nonce'], 'ctgf_form_settings')) {
+            $this->save_form_settings_immediate($form_id);
+        }
+        
         global $wpdb;
         $table_name = $wpdb->prefix . 'ctgf_form_configs';
         $config = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE form_id = %d", $form_id));
@@ -97,7 +102,7 @@ class CTGF_Form_Settings {
                         </tr>
                     </table>
                     
-                    <div class="ctgf-config-fields" <?php echo $active ? '' : 'style="display:none;"'; ?>>
+                    <div class="ctgf-config-fields" style="<?php echo $active ? 'display:block;' : 'display:none;'; ?>">
                         <table class="gforms_form_settings" cellspacing="0" cellpadding="0">
                             <tr>
                                 <th scope="row">
@@ -147,7 +152,12 @@ class CTGF_Form_Settings {
                             </tr>
                             <tr>
                                 <th scope="row">Email Field</th>
-                                <td>Field <?php echo esc_html($email_field); ?></td>
+                                <td>
+                                    <?php 
+                                    $field_label = $this->get_field_label($form, $email_field);
+                                    echo 'Field ' . esc_html($email_field) . ($field_label ? ' - ' . esc_html($field_label) : '');
+                                    ?>
+                                </td>
                             </tr>
                             <tr>
                                 <th scope="row">Tag</th>
@@ -175,6 +185,16 @@ class CTGF_Form_Settings {
             margin-top: 20px;
             padding-top: 20px;
             border-top: 1px solid #ddd;
+        }
+        .ctgf-status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .ctgf-status-active {
+            background-color: #46b450;
         }
         </style>
         
@@ -218,17 +238,23 @@ class CTGF_Form_Settings {
     }
     
     /**
-     * Save form settings
+     * Get field label by ID
      */
-    public function save_form_settings($form) {
-        // Check if this is our settings save
-        if (!isset($_POST['ctgf_save_settings']) || !wp_verify_nonce($_POST['ctgf_nonce'], 'ctgf_form_settings')) {
-            return $form;
+    private function get_field_label($form, $field_id) {
+        foreach ($form['fields'] as $field) {
+            if ($field->id == $field_id) {
+                return $field->label;
+            }
         }
-        
+        return '';
+    }
+    
+    /**
+     * Save form settings immediately (called during page load)
+     */
+    private function save_form_settings_immediate($form_id) {
         global $wpdb;
         $table_name = $wpdb->prefix . 'ctgf_form_configs';
-        $form_id = $form['id'];
         
         $active = isset($_POST['ctgf_active']) ? 1 : 0;
         $email_field = sanitize_text_field($_POST['ctgf_email_field'] ?? '');
@@ -266,16 +292,18 @@ class CTGF_Form_Settings {
         
         if ($result !== false) {
             // Add success message
-            add_action('admin_notices', function() {
-                echo '<div class="notice notice-success is-dismissible"><p>CleverTap settings saved successfully!</p></div>';
-            });
+            echo '<div class="notice notice-success is-dismissible" style="margin: 20px 0;"><p><strong>Success!</strong> CleverTap settings saved successfully!</p></div>';
         } else {
-            // Add error message
-            add_action('admin_notices', function() {
-                echo '<div class="notice notice-error is-dismissible"><p>Error saving CleverTap settings. Please try again.</p></div>';
-            });
+            // Add error message  
+            echo '<div class="notice notice-error is-dismissible" style="margin: 20px 0;"><p><strong>Error:</strong> Failed to save CleverTap settings. Please try again.</p></div>';
         }
-        
+    }
+    
+    /**
+     * Save form settings
+     */
+    public function save_form_settings($form) {
+        // This method is kept for compatibility but the actual saving is now handled in save_form_settings_immediate
         return $form;
     }
 }
