@@ -63,15 +63,6 @@ class CTGF_Submission_Handler {
         );
         
         wp_schedule_single_event(time() + 240, 'ctgf_send_delayed_event', array($user_data, $event_data)); // 4 minutes delay
-        
-        // Also send immediately for testing
-        $event_success = $api->send_event($email, 'newsletter_signup', $event_data);
-        
-        if ($event_success) {
-            $this->log_debug('Successfully sent event to CleverTap');
-        } else {
-            $this->log_debug('Failed to send event to CleverTap');
-        }
     }
     
     private function log_debug($message) {
