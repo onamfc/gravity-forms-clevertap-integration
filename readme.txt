@@ -3,7 +3,7 @@ Contributors: Brandon Estrella
 Tags: gravity forms, clevertap, analytics, forms, marketing
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 1.0.0
+Stable tag: 1.0.7
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -65,12 +65,3 @@ Yes! Each form can have its own tag configuration in the form settings.
 = What happens if the email field changes position? =
 
 No problem! You can easily update the email field mapping in the form settings without touching any code.
-
-== Changelog ==
-
-= 1.0.0 =
-* Initial release
-* Basic CleverTap integration with Gravity Forms
-* Form-specific configuration
-* API connection testing
-* Logging support
