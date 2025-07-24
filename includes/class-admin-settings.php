@@ -25,9 +25,6 @@ class CTGF_Admin_Settings {
             'ctgf-settings',
             array($this, 'settings_page')
         );
-        
-        // Debug: Log menu registration attempt
-        error_log('CTGF: Attempted to add admin menu with slug ctgf-settings. Page hook: ' . ($page_hook ? $page_hook : 'false'));
     }
     
     public function enqueue_admin_scripts($hook) {
