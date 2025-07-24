@@ -59,10 +59,18 @@ class CTGF_Submission_Handler {
         // Send event with delay (using wp_schedule_single_event for delay)
         $event_data = array(
             'tag' => $tag,
-            'form_id' => $form_id
+            'form_id' => $form_id,
+            'source' => 'gravity_forms'
         );
         
-        wp_schedule_single_event(time() + 240, 'ctgf_send_delayed_event', array($user_data, $event_data)); // 4 minutes delay
+        // Schedule the delayed event
+        $scheduled = wp_schedule_single_event(time() + 240, 'ctgf_send_delayed_event', array($email, $event_data));
+        
+        if ($scheduled) {
+            $this->log_debug('Delayed event scheduled successfully for email: ' . $email);
+        } else {
+            $this->log_debug('Failed to schedule delayed event for email: ' . $email);
+        }
     }
     
     private function log_debug($message) {
@@ -76,12 +84,20 @@ class CTGF_Submission_Handler {
 // Handle delayed event sending
 add_action('ctgf_send_delayed_event', 'ctgf_handle_delayed_event', 10, 2);
 
-function ctgf_handle_delayed_event($user_data, $event_data) {
+function ctgf_handle_delayed_event($email, $event_data) {
+    // Log that the delayed event is being processed
+    if (get_option('ctgf_enable_logging')) {
+        error_log('CleverTap GF Integration: Processing delayed event for email: ' . $email);
+        GFCommon::log_debug('CleverTap GF Integration: Processing delayed event for email: ' . $email);
+    }
+    
     $api = new CTGF_CleverTap_API();
-    $success = $api->send_event($user_data['email'], 'newsletter_signup', $event_data);
+    
+    // Use a more generic event name that should be allowed
+    $success = $api->send_event($email, 'Form Submission', $event_data);
 
     if (get_option('ctgf_enable_logging')) {
-        $message = $success ? 'Delayed event sent successfully' : 'Failed to send delayed event';
+        $message = $success ? 'Delayed event sent successfully for: ' . $email : 'Failed to send delayed event for: ' . $email;
         error_log('CleverTap GF Integration: ' . $message);
         GFCommon::log_debug('CleverTap GF Integration: ' . $message);
     }
