@@ -69,19 +69,12 @@ class CTGF_CleverTap_API {
             'identity' => $email,
             'type'     => 'event',
             'evtName'  => $event_name,
-            'evtData'  => array_merge($event_data, array(
-                'timestamp' => time()
-            ))
+            'evtData'  => $event_data
         );
 
         $payload = array(
             'd' => array($event_payload)
         );
-
-        // Log the payload being sent
-        if (get_option('ctgf_enable_logging')) {
-            error_log('CleverTap API sending event payload: ' . json_encode($payload));
-        }
 
         $response = $this->make_request($endpoint, $payload);
 
@@ -89,15 +82,7 @@ class CTGF_CleverTap_API {
             return true;
         }
 
-        // Enhanced error logging
-        $error_message = 'CleverTap send event failed for email: ' . $email . ' - Response: ' . print_r($response, true);
-        error_log($error_message);
-        
-        // Also log to Gravity Forms if available
-        if (class_exists('GFCommon')) {
-            GFCommon::log_debug($error_message);
-        }
-        
+        error_log('CleverTap send event failed: ' . print_r($response, true));
         return false;
     }
 

@@ -11,7 +11,7 @@ This plugin automatically sends user data from Gravity Forms submissions to [Cle
 
 When a user submits a form, the plugin:
 - Updates their **CleverTap profile** with a `$add` operation to the `Form Signups` field
-- Schedules a `newsletter_signup` event to fire **4 minutes later**
+- Schedules a `Newsletter Signup` event to fire **4 minutes later**
 
 ---
 
@@ -82,7 +82,7 @@ Each row represents a form-to-tag mapping.
     {
       "identity": "user@example.com",
       "type": "event",
-      "evtName": "newsletter_signup",
+      "evtName": "Newsletter Signup",
       "evtData": {
         "tag": "Retreat 2025",
         "form_id": 5

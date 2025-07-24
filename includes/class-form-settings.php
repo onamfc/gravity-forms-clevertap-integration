@@ -125,7 +125,7 @@ class CTGF_Form_Settings {
                                 <td>
                                     <input type="text" id="ctgf_tag" name="ctgf_tag" value="<?php echo esc_attr($tag); ?>" class="gform-settings-input__container" />
                                     <span class="gform-settings-description">
-                                        The tag to add to the user in CleverTap (e.g., "Newsletter Signup", "Contact Form").
+                                        The tag to add to the user in CleverTap (e.g., "Anxiety", "Retreat2025").
                                     </span>
                                 </td>
                             </tr>
