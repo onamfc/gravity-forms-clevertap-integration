@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    bootstrap="tests/bootstrap.php"
+    backupGlobals="false"
+    colors="true"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    processIsolation="false"
+    stopOnFailure="false"
+    testSuiteLoaderClass="PHPUnit\Runner\StandardTestSuiteLoader"
+    verbose="true">
+    
+    <testsuites>
+        <testsuite name="CleverTap Gravity Forms Integration">
+            <directory>./tests/</directory>
+        </testsuite>
+    </testsuites>
+    
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./includes/</directory>
+            <file>./clevertap-gravityforms.php</file>
+        </whitelist>
+    </filter>
+    
+    <logging>
+        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
+    </logging>
+</phpunit>
