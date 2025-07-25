@@ -11,7 +11,7 @@ This plugin automatically sends user data from Gravity Forms submissions to [Cle
 
 When a user submits a form, the plugin:
 - Updates their **CleverTap profile** with a `$add` operation to the `Form Signups` field
-- Schedules a `Newsletter Signup` event to fire **4 minutes later**
+- Schedules a **custom event** (configurable per form) to fire **4 minutes later**
 
 ---
 
@@ -19,6 +19,7 @@ When a user submits a form, the plugin:
 
 - Zero-code setup for form-to-CleverTap syncing
 - Supports custom tag per form
+- Supports custom event name per form
 - Uses email as the unique identity
 - Deferred (delayed) event sending via WordPress cron
 - Optional debug logging to Gravity Forms and PHP logs
@@ -42,15 +43,16 @@ This plugin uses a table `wp_ctgf_form_configs` (or your custom prefix) to map:
 - `form_id`
 - `email_field` (the Gravity Forms field ID that holds the email address)
 - `tag` (value to send to CleverTap)
+- `event_name` (custom event name to send to CleverTap)
 - `active` (1 = enabled, 0 = disabled)
 
 Each row represents a form-to-tag mapping.
 
 **Example Row:**
 
-| form_id | email_field | tag          | active |
-|---------|-------------|--------------|--------|
-| 5       | 1           | Retreat 2025 | 1      |
+| form_id | email_field | tag          | event_name           | active |
+|---------|-------------|--------------|----------------------|--------|
+| 5       | 1           | Retreat 2025 | Retreat Registration | 1      |
 
 ---
 
@@ -82,7 +84,7 @@ Each row represents a form-to-tag mapping.
     {
       "identity": "user@example.com",
       "type": "event",
-      "evtName": "Newsletter Signup",
+      "evtName": "Retreat Registration",
       "evtData": {
         "tag": "Retreat 2025",
         "form_id": 5
@@ -99,7 +101,8 @@ Each row represents a form-to-tag mapping.
 - No manual hook setup needed (`gform_after_submission` is automatically handled)
 - Supports delayed jobs via `wp_schedule_single_event`
 - Logging can be toggled with the `ctgf_enable_logging` option
-- Delayed jobs hook into `ctgf_send_delayed_event`
+- Delayed jobs hook into `ctgf_send_delayed_event` with custom event names
+- Database schema automatically migrates to support custom event names
 
 ---
 

@@ -70,11 +70,17 @@ $wpdb->prepare = function($query, ...$args) {
     return vsprintf(str_replace('%s', "'%s'", str_replace('%d', '%d', $query)), $args);
 };
 $wpdb->get_row = function($query) {
+    if (strpos($query, 'SELECT event_name') !== false) {
+        return (object) [
+            'event_name' => 'Test Event'
+        ];
+    }
     return (object) [
         'id' => 1,
         'form_id' => 1,
         'email_field' => '1',
         'tag' => 'Test Tag',
+        'event_name' => 'Test Event',
         'active' => 1
     ];
 };

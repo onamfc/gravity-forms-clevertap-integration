@@ -32,15 +32,24 @@ jQuery(document).ready(function($) {
         }
     });
     
+    // Event name input validation
+    $('#ctgf_event_name').on('input', function() {
+        var eventName = $(this).val();
+        if (eventName.length > 0) {
+            $(this).removeClass('error');
+        }
+    });
+    
     // Form submission validation
     $('form').submit(function(e) {
         if ($('#ctgf_active').is(':checked')) {
             var emailField = $('#ctgf_email_field').val();
             var tag = $('#ctgf_tag').val();
+            var eventName = $('#ctgf_event_name').val();
             
-            if (!emailField || !tag) {
+            if (!emailField || !tag || !eventName) {
                 e.preventDefault();
-                alert('Please select an email field and enter a tag when CleverTap integration is enabled.');
+                alert('Please select an email field, enter a tag, and specify an event name when CleverTap integration is enabled.');
                 return false;
             }
         }

@@ -84,6 +84,7 @@ function ctgf_activate() {
         form_id mediumint(9) NOT NULL,
         email_field varchar(10) NOT NULL,
         tag varchar(255) NOT NULL,
+        event_name varchar(255) NOT NULL DEFAULT 'Newsletter Signup',
         active tinyint(1) DEFAULT 1,
         created_at datetime DEFAULT CURRENT_TIMESTAMP,
         updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -93,4 +94,10 @@ function ctgf_activate() {
     
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     dbDelta($sql);
+    
+    // Add event_name column to existing installations
+    $column_exists = $wpdb->get_results("SHOW COLUMNS FROM $table_name LIKE 'event_name'");
+    if (empty($column_exists)) {
+        $wpdb->query("ALTER TABLE $table_name ADD COLUMN event_name varchar(255) NOT NULL DEFAULT 'Newsletter Signup' AFTER tag");
+    }
 }
