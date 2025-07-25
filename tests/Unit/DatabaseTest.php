@@ -18,6 +18,7 @@ class DatabaseTest extends TestCase
             $this->assertArrayHasKey('form_id', $data);
             $this->assertArrayHasKey('email_field', $data);
             $this->assertArrayHasKey('tag', $data);
+            $this->assertArrayHasKey('event_name', $data);
             $this->assertArrayHasKey('active', $data);
             return 1;
         };
@@ -29,9 +30,10 @@ class DatabaseTest extends TestCase
                 'form_id' => 1,
                 'email_field' => '1',
                 'tag' => 'Test Tag',
+                'event_name' => 'Test Event',
                 'active' => 1
             ],
-            ['%d', '%s', '%s', '%d']
+            ['%d', '%s', '%s', '%s', '%d']
         );
 
         $this->assertTrue($insertCalled);
@@ -48,6 +50,7 @@ class DatabaseTest extends TestCase
             $this->assertEquals('wp_ctgf_form_configs', $table);
             $this->assertArrayHasKey('email_field', $data);
             $this->assertArrayHasKey('tag', $data);
+            $this->assertArrayHasKey('event_name', $data);
             $this->assertArrayHasKey('active', $data);
             $this->assertArrayHasKey('form_id', $where);
             return 1;
@@ -59,10 +62,11 @@ class DatabaseTest extends TestCase
             [
                 'email_field' => '2',
                 'tag' => 'Updated Tag',
+                'event_name' => 'Updated Event',
                 'active' => 1
             ],
             ['form_id' => 1],
-            ['%s', '%s', '%d'],
+            ['%s', '%s', '%s', '%d'],
             ['%d']
         );
 
@@ -83,6 +87,7 @@ class DatabaseTest extends TestCase
                 'form_id' => 1,
                 'email_field' => '1',
                 'tag' => 'Test Tag',
+                'event_name' => 'Test Event',
                 'active' => 1,
                 'created_at' => '2024-01-01 12:00:00',
                 'updated_at' => '2024-01-01 12:00:00'
@@ -94,6 +99,7 @@ class DatabaseTest extends TestCase
         $this->assertIsObject($config);
         $this->assertEquals(1, $config->form_id);
         $this->assertEquals('Test Tag', $config->tag);
+        $this->assertEquals('Test Event', $config->event_name);
         $this->assertEquals(1, $config->active);
     }
 
@@ -127,6 +133,7 @@ class DatabaseTest extends TestCase
         form_id mediumint(9) NOT NULL,
         email_field varchar(10) NOT NULL,
         tag varchar(255) NOT NULL,
+        event_name varchar(255) NOT NULL DEFAULT 'Newsletter Signup',
         active tinyint(1) DEFAULT 1,
         created_at datetime DEFAULT CURRENT_TIMESTAMP,
         updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -139,6 +146,7 @@ class DatabaseTest extends TestCase
         $this->assertStringContainsString('form_id mediumint(9) NOT NULL', $expectedSql);
         $this->assertStringContainsString('email_field varchar(10) NOT NULL', $expectedSql);
         $this->assertStringContainsString('tag varchar(255) NOT NULL', $expectedSql);
+        $this->assertStringContainsString('event_name varchar(255) NOT NULL', $expectedSql);
         $this->assertStringContainsString('active tinyint(1) DEFAULT 1', $expectedSql);
         $this->assertStringContainsString('PRIMARY KEY (id)', $expectedSql);
         $this->assertStringContainsString('UNIQUE KEY form_id (form_id)', $expectedSql);

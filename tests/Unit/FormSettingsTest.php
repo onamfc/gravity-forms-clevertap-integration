@@ -95,7 +95,8 @@ class FormSettingsTest extends TestCase
             'ctgf_nonce' => 'test_nonce',
             'ctgf_active' => '1',
             'ctgf_email_field' => '1',
-            'ctgf_tag' => 'Test Tag'
+            'ctgf_tag' => 'Test Tag',
+            'ctgf_event_name' => 'Test Event'
         ];
 
         // Mock database operations
@@ -108,6 +109,7 @@ class FormSettingsTest extends TestCase
             $this->assertEquals(1, $data['form_id']);
             $this->assertEquals('1', $data['email_field']);
             $this->assertEquals('Test Tag', $data['tag']);
+            $this->assertEquals('Test Event', $data['event_name']);
             $this->assertEquals(1, $data['active']);
             return 1;
         };
@@ -118,10 +120,12 @@ class FormSettingsTest extends TestCase
         $active = isset($_POST['ctgf_active']) ? 1 : 0;
         $emailField = sanitize_text_field($_POST['ctgf_email_field'] ?? '');
         $tag = sanitize_text_field($_POST['ctgf_tag'] ?? '');
+        $eventName = sanitize_text_field($_POST['ctgf_event_name'] ?? 'Newsletter Signup');
 
         $this->assertEquals(1, $active);
         $this->assertEquals('1', $emailField);
         $this->assertEquals('Test Tag', $tag);
+        $this->assertEquals('Test Event', $eventName);
     }
 
     public function testSaveFormSettingsWithExistingConfig()
@@ -134,7 +138,8 @@ class FormSettingsTest extends TestCase
             'ctgf_nonce' => 'test_nonce',
             'ctgf_active' => '1',
             'ctgf_email_field' => '2',
-            'ctgf_tag' => 'Updated Tag'
+            'ctgf_tag' => 'Updated Tag',
+            'ctgf_event_name' => 'Updated Event'
         ];
 
         // Mock database operations
@@ -146,6 +151,7 @@ class FormSettingsTest extends TestCase
             $this->assertEquals('wp_ctgf_form_configs', $table);
             $this->assertEquals('2', $data['email_field']);
             $this->assertEquals('Updated Tag', $data['tag']);
+            $this->assertEquals('Updated Event', $data['event_name']);
             $this->assertEquals(1, $data['active']);
             $this->assertEquals(['form_id' => 1], $where);
             return 1;
@@ -156,9 +162,11 @@ class FormSettingsTest extends TestCase
         $active = isset($_POST['ctgf_active']) ? 1 : 0;
         $emailField = sanitize_text_field($_POST['ctgf_email_field'] ?? '');
         $tag = sanitize_text_field($_POST['ctgf_tag'] ?? '');
+        $eventName = sanitize_text_field($_POST['ctgf_event_name'] ?? 'Newsletter Signup');
 
         $this->assertEquals(1, $active);
         $this->assertEquals('2', $emailField);
         $this->assertEquals('Updated Tag', $tag);
+        $this->assertEquals('Updated Event', $eventName);
     }
 }

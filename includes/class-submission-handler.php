@@ -41,6 +41,12 @@ class CTGF_Submission_Handler {
     private function send_to_clevertap($email, $tag, $form_id) {
         $this->log_debug('Sending to CleverTap - Email: ' . $email . ', Tag: ' . $tag . ', Form ID: ' . $form_id);
         
+        // Get the event name from the config
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'ctgf_form_configs';
+        $config = $wpdb->get_row($wpdb->prepare("SELECT event_name FROM $table_name WHERE form_id = %d", $form_id));
+        $event_name = $config && !empty($config->event_name) ? $config->event_name : 'Newsletter Signup';
+        
         $api = new CTGF_CleverTap_API();
         
         $user_data = array(
@@ -60,6 +66,7 @@ class CTGF_Submission_Handler {
         $event_data = array(
             'tag' => $tag,
             'form_id' => $form_id,
+            'event_name' => $event_name,
             'source' => 'gravity_forms'
         );
         
@@ -79,10 +86,11 @@ add_action('ctgf_send_delayed_event', 'ctgf_handle_delayed_event', 10, 2);
 
 function ctgf_handle_delayed_event($user_data, $event_data) {
     $api = new CTGF_CleverTap_API();
-    $success = $api->send_event($user_data['email'], 'Newsletter Signup', $event_data);
+    $event_name = isset($event_data['event_name']) ? $event_data['event_name'] : 'Newsletter Signup';
+    $success = $api->send_event($user_data['email'], $event_name, $event_data);
 
     if (get_option('ctgf_enable_logging')) {
-        $message = $success ? 'Delayed event sent successfully' : 'Failed to send delayed event';
+        $message = $success ? "Delayed event '$event_name' sent successfully" : "Failed to send delayed event '$event_name'";
         error_log('CleverTap GF Integration: ' . $message);
         GFCommon::log_debug('CleverTap GF Integration: ' . $message);
     }
