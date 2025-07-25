@@ -33,6 +33,11 @@ class SubmissionHandlerTest extends TestCase
         
         // Mock database config
         $wpdb->get_row = function($query) {
+            if (strpos($query, 'SELECT event_name') !== false) {
+                return (object) [
+                    'event_name' => 'Custom Event'
+                ];
+            }
             return (object) [
                 'id' => 1,
                 'form_id' => 1,
@@ -123,6 +128,11 @@ class SubmissionHandlerTest extends TestCase
         
         // Mock database config
         $wpdb->get_row = function($query) {
+            if (strpos($query, 'SELECT event_name') !== false) {
+                return (object) [
+                    'event_name' => 'Test Event'
+                ];
+            }
             return (object) [
                 'id' => 1,
                 'form_id' => 1,
@@ -154,6 +164,11 @@ class SubmissionHandlerTest extends TestCase
         
         // Mock database config
         $wpdb->get_row = function($query) {
+            if (strpos($query, 'SELECT event_name') !== false) {
+                return (object) [
+                    'event_name' => 'Test Event'
+                ];
+            }
             return (object) [
                 'id' => 1,
                 'form_id' => 1,
@@ -188,7 +203,7 @@ class SubmissionHandlerTest extends TestCase
                ->once()
                ->with(
                    'test@example.com',
-                   'Newsletter Signup',
+                   'Custom Event',
                    \Mockery::type('array')
                )
                ->andReturn(true);
@@ -197,7 +212,7 @@ class SubmissionHandlerTest extends TestCase
         Functions\when('error_log')->justReturn(true);
 
         $userData = ['email' => 'test@example.com', 'identity' => 'test@example.com'];
-        $eventData = ['tag' => 'Test Tag', 'form_id' => 1, 'source' => 'gravity_forms'];
+        $eventData = ['tag' => 'Test Tag', 'form_id' => 1, 'event_name' => 'Custom Event', 'source' => 'gravity_forms'];
 
         // Call the delayed event handler function
         ctgf_handle_delayed_event($userData, $eventData);
