@@ -90,7 +90,7 @@ class CTGF_Form_Settings {
         ?>
         <div class="gform-settings-panel">
             <header class="gform-settings-panel__header">
-                <h4 class="gform-settings-panel__title">CleverTap Integration Settings</h4>
+                <h3 class="gform-settings-panel__title">CleverTap Integration Settings</h3>
             </header>
             
             <div class="gform-settings-panel__content">
@@ -161,7 +161,7 @@ class CTGF_Form_Settings {
                             </tr>
                         </table>
                         
-                        <h4 style="margin-top: 30px; margin-bottom: 15px;">Property Mappings</h4>
+                        <h3 style="margin-top: 30px; margin-bottom: 15px;">Property Mappings</h3>
                         <p class="gform-settings-description" style="margin-bottom: 20px;">
                             Map form fields to CleverTap profile properties. Each property will be sent to CleverTap when the form is submitted.
                         </p>

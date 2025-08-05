@@ -253,10 +253,10 @@
 
 #ctgf-add-mapping,
 #ctgf-add-event-mapping {
-    background: #0073aa;
+    background: #333333;
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 1px 12px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
@@ -264,7 +264,7 @@
 
 #ctgf-add-mapping:hover,
 #ctgf-add-event-mapping:hover {
-    background: #005a87;
+    background: #3e3e3e;
 }
 
 /* Current Configuration Summary */
