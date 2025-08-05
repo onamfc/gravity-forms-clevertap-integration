@@ -147,23 +147,22 @@ var CTGF_Admin = {
                     var eventKey = $(this).find('.ctgf-event-key').val();
                     var eventValue = $(this).find('.ctgf-event-value').val();
                     
+                    // If either field has a value, both must be filled
                     if (eventKey || eventValue) {
-                        // If either field has a value, both must be filled
-                        if (!eventKey || !eventValue) {
+                        if (!eventKey) {
                             hasErrors = true;
-                            if (!eventKey) {
-                                $(this).find('.ctgf-event-key').addClass('error');
-                            }
-                            if (!eventValue) {
-                                $(this).find('.ctgf-event-value').addClass('error');
-                            }
+                            $(this).find('.ctgf-event-key').addClass('error');
+                        }
+                        if (!eventValue) {
+                            hasErrors = true;
+                            $(this).find('.ctgf-event-value').addClass('error');
                         }
                     }
                 });
                 
                 if (hasErrors) {
                     e.preventDefault();
-                    alert('Please complete all property and event mappings or remove incomplete ones.');
+                    alert('Please complete all property mappings and event data mappings, or remove incomplete ones.');
                     return false;
                 }
                 
