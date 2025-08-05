@@ -54,7 +54,19 @@ Each row represents a complete form configuration.
 
 | form_id | email_field | tag          | event_name           | property_mappings                                                    | active |
 |---------|-------------|--------------|----------------------|----------------------------------------------------------------------|--------|
-| 5       | 1           | Retreat 2025 | Retreat Registration | `[{"property_name":"Phone","form_field":"3"},{"property_name":"Company","form_field":"4"}]` | 1      |
+| 5       | 1           | Retreat 2025 | Retreat Registration | `[{"property_name":"Phone","form_field":"3"}]` | 1      |
+
+The table also includes:
+- `event_mappings` (JSON array of custom event data mappings)
+
+**Example Event Mappings:**
+```json
+[
+  {"event_key":"lead_source","form_field":"5"},
+  {"event_key":"campaign","form_field":"6"},
+  {"event_key":"referrer","form_field":"7"}
+]
+```
 
 ---
 
@@ -92,9 +104,11 @@ Each row represents a complete form configuration.
       "type": "event",
       "evtName": "Retreat Registration",
       "evtData": {
-        "tag": "Retreat 2025",
         "form_id": 5,
-        "properties_sent": 3
+        "tag": "Retreat 2025",
+        "lead_source": "Google Ads",
+        "campaign": "Summer 2024",
+        "referrer": "facebook.com"
       }
     }
   ]
@@ -107,10 +121,12 @@ Each row represents a complete form configuration.
 
 - No manual hook setup needed (`gform_after_submission` is automatically handled)
 - Flexible property mapping system allows sending any form field to CleverTap
+- Flexible event data mapping system allows sending custom event data
 - Supports delayed jobs via `wp_schedule_single_event`
 - Logging can be toggled with the `ctgf_enable_logging` option
 - Delayed jobs hook into `ctgf_send_delayed_event` with custom event names
 - Database schema automatically migrates to support property mappings
+- Database schema automatically migrates to support event data mappings
 - Backward compatibility maintained for existing tag-based configurations
 
 ---

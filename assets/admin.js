@@ -55,6 +55,21 @@ jQuery(document).ready(function($) {
         }
     });
     
+    // Event mapping validation
+    $(document).on('input', '.ctgf-event-key', function() {
+        var eventKey = $(this).val();
+        if (eventKey.length > 0) {
+            $(this).removeClass('error');
+        }
+    });
+    
+    $(document).on('change', '.ctgf-event-form-field', function() {
+        var formField = $(this).val();
+        if (formField.length > 0) {
+            $(this).removeClass('error');
+        }
+    });
+    
     // Form submission validation
     $('form').submit(function(e) {
         if ($('#ctgf_active').is(':checked')) {
@@ -93,9 +108,28 @@ jQuery(document).ready(function($) {
                 }
             });
             
+            // Check event mappings for completeness
+            $('.ctgf-event-mapping').each(function() {
+                var eventKey = $(this).find('.ctgf-event-key').val();
+                var formField = $(this).find('.ctgf-event-form-field').val();
+                
+                if (eventKey || formField) {
+                    // If either field has a value, both must be filled
+                    if (!eventKey || !formField) {
+                        hasErrors = true;
+                        if (!eventKey) {
+                            $(this).find('.ctgf-event-key').addClass('error');
+                        }
+                        if (!formField) {
+                            $(this).find('.ctgf-event-form-field').addClass('error');
+                        }
+                    }
+                }
+            });
+            
             if (hasErrors) {
                 e.preventDefault();
-                alert('Please complete all property mappings or remove incomplete ones.');
+                alert('Please complete all property and event mappings or remove incomplete ones.');
                 return false;
             }
             

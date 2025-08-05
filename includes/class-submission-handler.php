@@ -90,15 +90,33 @@ class CTGF_Submission_Handler {
             $this->log_debug('No properties to send to CleverTap');
         }
         
-        // Send event with delay (using wp_schedule_single_event for delay)
+        // Build custom event data from mappings
         $event_data = array(
-            'tag' => $config->tag,
-            'form_id' => $form_id,
-            'event_name' => $event_name,
-            'source' => 'gravity_forms',
-            'properties_sent' => count($properties)
+            'form_id' => $form_id
         );
         
+        // Add legacy tag if present
+        if (!empty($config->tag)) {
+            $event_data['tag'] = $config->tag;
+        }
+        
+        // Process event mappings
+        if (!empty($config->event_mappings)) {
+            $event_mappings = json_decode($config->event_mappings, true);
+            if (is_array($event_mappings)) {
+                foreach ($event_mappings as $mapping) {
+                    if (!empty($mapping['event_key']) && !empty($mapping['form_field'])) {
+                        $field_value = rgar($entry, $mapping['form_field']);
+                        if (!empty($field_value)) {
+                            $event_data[$mapping['event_key']] = $field_value;
+                            $this->log_debug('Mapped event data: ' . $mapping['event_key'] . ' = ' . $field_value);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Send event with delay (using wp_schedule_single_event for delay)
         wp_schedule_single_event(time() + 240, 'ctgf_send_delayed_event', array($user_data, $event_data)); // 4 minutes delay
     }
     

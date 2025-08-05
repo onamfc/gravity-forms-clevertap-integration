@@ -18,9 +18,11 @@ This plugin provides seamless integration between Gravity Forms and CleverTap, a
 * Easy configuration through WordPress admin
 * Form-specific settings for email field mapping and tagging
 * Flexible property mapping - send any form field to CleverTap
+* Flexible event data mapping - send custom event data with each event
 * Custom event names for each form
 * Automatic user attribute updates in CleverTap
 * Event tracking with customizable tags
+* Custom event data with unlimited key-value pairs
 * Built-in logging for debugging
 * API connection testing
 * Delayed event sending (matches your current 4-minute delay)
@@ -54,7 +56,8 @@ This plugin provides seamless integration between Gravity Forms and CleverTap, a
 6. Enter the tag you want to apply in CleverTap
 7. Enter the event name you want to send to CleverTap
 8. Add property mappings to send additional form fields to CleverTap
-9. Save the form
+9. Add event data mappings to send custom data with the CleverTap event
+10. Save the form
 
 == Frequently Asked Questions ==
 
@@ -74,6 +77,10 @@ Yes! Each form can have its own custom event name. For example, you might use "N
 
 Yes! You can create custom property mappings to send any form field to CleverTap as a profile property. For example, you can send phone numbers, company names, or any other form data directly to CleverTap.
 
+= Can I send custom data with CleverTap events? =
+
+Yes! You can create custom event data mappings to send any form field as event data. This allows you to include additional context like lead source, campaign information, referrer data, or any other relevant information with your CleverTap events.
+
 = What happens if the email field changes position? =
 
-No problem! You can easily update the email field mapping and all property mappings in the form settings without touching any code.
+No problem! You can easily update the email field mapping, property mappings, and event data mappings in the form settings without touching any code.

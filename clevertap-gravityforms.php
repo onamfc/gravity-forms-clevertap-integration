@@ -86,6 +86,7 @@ function ctgf_activate() {
         tag varchar(255) NOT NULL,
         event_name varchar(255) NOT NULL DEFAULT 'Newsletter Signup',
         property_mappings TEXT,
+        event_mappings TEXT,
         active tinyint(1) DEFAULT 1,
         created_at datetime DEFAULT CURRENT_TIMESTAMP,
         updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -106,6 +107,12 @@ function ctgf_activate() {
     $property_mappings_exists = $wpdb->get_results("SHOW COLUMNS FROM $table_name LIKE 'property_mappings'");
     if (empty($property_mappings_exists)) {
         $wpdb->query("ALTER TABLE $table_name ADD COLUMN property_mappings TEXT AFTER event_name");
+    }
+    
+    // Add event_mappings column to existing installations
+    $event_mappings_exists = $wpdb->get_results("SHOW COLUMNS FROM $table_name LIKE 'event_mappings'");
+    if (empty($event_mappings_exists)) {
+        $wpdb->query("ALTER TABLE $table_name ADD COLUMN event_mappings TEXT AFTER property_mappings");
     }
     
     // Migrate existing profile_key data to property_mappings if needed

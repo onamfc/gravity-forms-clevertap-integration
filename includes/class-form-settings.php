@@ -68,6 +68,10 @@ class CTGF_Form_Settings {
         $property_mappings = $config && !empty($config->property_mappings) ? 
             json_decode($config->property_mappings, true) : array();
         
+        // Get event mappings
+        $event_mappings = $config && !empty($config->event_mappings) ? 
+            json_decode($config->event_mappings, true) : array();
+        
         // Check if global settings are configured
         $account_id = get_option('ctgf_account_id');
         $passcode = get_option('ctgf_passcode');
@@ -191,6 +195,51 @@ class CTGF_Form_Settings {
                         <div style="margin-top: 15px;">
                             <button type="button" id="ctgf-add-mapping" class="button">Add Property Mapping</button>
                         </div>
+                        
+                        <h4 style="margin-top: 30px; margin-bottom: 15px;">Event Data Mappings</h4>
+                        <p class="gform-settings-description" style="margin-bottom: 20px;">
+                            Map form fields to custom event data that will be sent with the CleverTap event. This allows you to include additional context with your events.
+                        </p>
+                        
+                        <div id="ctgf-event-mappings">
+                            <?php if (!empty($event_mappings)): ?>
+                                <?php foreach ($event_mappings as $index => $mapping): ?>
+                                    <div class="ctgf-event-mapping" data-index="<?php echo $index; ?>">
+                                        <table class="gforms_form_settings" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <th scope="row" style="width: 200px;">
+                                                    <label>Event Data Key</label>
+                                                </th>
+                                                <td style="width: 250px;">
+                                                    <input type="text" 
+                                                           name="ctgf_event_mappings[<?php echo $index; ?>][event_key]" 
+                                                           value="<?php echo esc_attr($mapping['event_key']); ?>" 
+                                                           class="gform-settings-input__container ctgf-event-key" 
+                                                           placeholder="e.g., lead_source, campaign, referrer" />
+                                                </td>
+                                                <th scope="row" style="width: 150px;">
+                                                    <label>Form Field</label>
+                                                </th>
+                                                <td style="width: 250px;">
+                                                    <select name="ctgf_event_mappings[<?php echo $index; ?>][form_field]" 
+                                                            class="gform-settings-input__container ctgf-event-form-field">
+                                                        <option value="">Select Field</option>
+                                                        <?php echo $this->get_all_field_options($form, $mapping['form_field']); ?>
+                                                    </select>
+                                                </td>
+                                                <td style="width: 100px;">
+                                                    <button type="button" class="button ctgf-remove-event-mapping" style="color: #dc3232;">Remove</button>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <div style="margin-top: 15px;">
+                            <button type="button" id="ctgf-add-event-mapping" class="button">Add Event Data Mapping</button>
+                        </div>
                     </div>
                     
                     <div class="gform-settings-save-container">
@@ -245,6 +294,23 @@ class CTGF_Form_Settings {
                                     </td>
                                 </tr>
                             <?php endif; ?>
+                            <?php if (!empty($event_mappings)): ?>
+                                <tr>
+                                    <th scope="row">Event Data Mappings</th>
+                                    <td>
+                                        <?php foreach ($event_mappings as $mapping): ?>
+                                            <div style="margin-bottom: 5px;">
+                                                <strong><?php echo esc_html($mapping['event_key']); ?>:</strong> 
+                                                Field <?php echo esc_html($mapping['form_field']); ?>
+                                                <?php 
+                                                $field_label = $this->get_field_label($form, $mapping['form_field']);
+                                                if ($field_label) echo ' - ' . esc_html($field_label);
+                                                ?>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
                         </table>
                     </div>
                 <?php endif; ?>
@@ -278,6 +344,39 @@ class CTGF_Form_Settings {
                         </td>
                         <td style="width: 100px;">
                             <button type="button" class="button ctgf-remove-mapping" style="color: #dc3232;">Remove</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Event Mapping Template (hidden) -->
+        <div id="ctgf-event-mapping-template" style="display: none;">
+            <div class="ctgf-event-mapping" data-index="__INDEX__">
+                <table class="gforms_form_settings" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <th scope="row" style="width: 200px;">
+                            <label>Event Data Key</label>
+                        </th>
+                        <td style="width: 250px;">
+                            <input type="text" 
+                                   name="ctgf_event_mappings[__INDEX__][event_key]" 
+                                   value="" 
+                                   class="gform-settings-input__container ctgf-event-key" 
+                                   placeholder="e.g., lead_source, campaign, referrer" />
+                        </td>
+                        <th scope="row" style="width: 150px;">
+                            <label>Form Field</label>
+                        </th>
+                        <td style="width: 250px;">
+                            <select name="ctgf_event_mappings[__INDEX__][form_field]" 
+                                    class="gform-settings-input__container ctgf-event-form-field">
+                                <option value="">Select Field</option>
+                                <?php echo $this->get_all_field_options($form, ''); ?>
+                            </select>
+                        </td>
+                        <td style="width: 100px;">
+                            <button type="button" class="button ctgf-remove-event-mapping" style="color: #dc3232;">Remove</button>
                         </td>
                     </tr>
                 </table>
@@ -331,6 +430,7 @@ class CTGF_Form_Settings {
         <script>
         jQuery(document).ready(function($) {
             var mappingIndex = <?php echo !empty($property_mappings) ? max(array_keys($property_mappings)) + 1 : 0; ?>;
+            var eventMappingIndex = <?php echo !empty($event_mappings) ? max(array_keys($event_mappings)) + 1 : 0; ?>;
             
             $('#ctgf_active').change(function() {
                 if ($(this).is(':checked')) {
@@ -351,6 +451,19 @@ class CTGF_Form_Settings {
             // Remove property mapping
             $(document).on('click', '.ctgf-remove-mapping', function() {
                 $(this).closest('.ctgf-property-mapping').remove();
+            });
+            
+            // Add new event mapping
+            $('#ctgf-add-event-mapping').click(function() {
+                var template = $('#ctgf-event-mapping-template').html();
+                var newMapping = template.replace(/__INDEX__/g, eventMappingIndex);
+                $('#ctgf-event-mappings').append(newMapping);
+                eventMappingIndex++;
+            });
+            
+            // Remove event mapping
+            $(document).on('click', '.ctgf-remove-event-mapping', function() {
+                $(this).closest('.ctgf-event-mapping').remove();
             });
         });
         </script>
@@ -444,6 +557,24 @@ class CTGF_Form_Settings {
         
         $property_mappings_json = json_encode($property_mappings);
         
+        // Process event mappings
+        $event_mappings = array();
+        if (isset($_POST['ctgf_event_mappings']) && is_array($_POST['ctgf_event_mappings'])) {
+            foreach ($_POST['ctgf_event_mappings'] as $mapping) {
+                $event_key = sanitize_text_field($mapping['event_key'] ?? '');
+                $form_field = sanitize_text_field($mapping['form_field'] ?? '');
+                
+                if (!empty($event_key) && !empty($form_field)) {
+                    $event_mappings[] = array(
+                        'event_key' => $event_key,
+                        'form_field' => $form_field
+                    );
+                }
+            }
+        }
+        
+        $event_mappings_json = json_encode($event_mappings);
+        
         // Check if config exists
         $existing = $wpdb->get_var($wpdb->prepare("SELECT id FROM $table_name WHERE form_id = %d", $form_id));
         
@@ -456,10 +587,11 @@ class CTGF_Form_Settings {
                     'tag' => $tag,
                     'event_name' => $event_name,
                     'property_mappings' => $property_mappings_json,
+                    'event_mappings' => $event_mappings_json,
                     'active' => $active
                 ),
                 array('form_id' => $form_id),
-                array('%s', '%s', '%s', '%s', '%d'),
+                array('%s', '%s', '%s', '%s', '%s', '%d'),
                 array('%d')
             );
         } else {
@@ -472,9 +604,10 @@ class CTGF_Form_Settings {
                     'tag' => $tag,
                     'event_name' => $event_name,
                     'property_mappings' => $property_mappings_json,
+                    'event_mappings' => $event_mappings_json,
                     'active' => $active
                 ),
-                array('%d', '%s', '%s', '%s', '%s', '%d')
+                array('%d', '%s', '%s', '%s', '%s', '%s', '%d')
             );
         }
         
