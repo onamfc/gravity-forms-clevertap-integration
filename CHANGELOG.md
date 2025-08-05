@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.3.6] - 2025-01-27
+## [1.3.6]
 
 ### Fixed
 - **Event Data Mappings**: Fixed event data mappings to allow custom key-value pairs instead of being tied to form fields
