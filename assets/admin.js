@@ -40,10 +40,17 @@ jQuery(document).ready(function($) {
         }
     });
     
-    // Profile key input validation
-    $('#ctgf_profile_key').on('input', function() {
-        var profileKey = $(this).val();
-        if (profileKey.length > 0) {
+    // Property mapping validation
+    $(document).on('input', '.ctgf-property-name', function() {
+        var propertyName = $(this).val();
+        if (propertyName.length > 0) {
+            $(this).removeClass('error');
+        }
+    });
+    
+    $(document).on('change', '.ctgf-form-field', function() {
+        var formField = $(this).val();
+        if (formField.length > 0) {
             $(this).removeClass('error');
         }
     });
@@ -52,13 +59,49 @@ jQuery(document).ready(function($) {
     $('form').submit(function(e) {
         if ($('#ctgf_active').is(':checked')) {
             var emailField = $('#ctgf_email_field').val();
-            var tag = $('#ctgf_tag').val();
             var eventName = $('#ctgf_event_name').val();
-            var profileKey = $('#ctgf_profile_key').val();
+            var hasValidMappings = false;
+            var hasErrors = false;
             
-            if (!emailField || !tag || !eventName || !profileKey) {
+            if (!emailField || !eventName) {
                 e.preventDefault();
-                alert('Please select an email field, enter a tag, specify an event name, and enter a profile key when CleverTap integration is enabled.');
+                alert('Please select an email field and specify an event name when CleverTap integration is enabled.');
+                return false;
+            }
+            
+            // Check if we have at least one valid property mapping or a tag
+            var tag = $('#ctgf_tag').val();
+            if (tag) {
+                hasValidMappings = true;
+            }
+            
+            $('.ctgf-property-mapping').each(function() {
+                var propertyName = $(this).find('.ctgf-property-name').val();
+                var formField = $(this).find('.ctgf-form-field').val();
+                
+                if (propertyName && formField) {
+                    hasValidMappings = true;
+                } else if (propertyName || formField) {
+                    // Incomplete mapping
+                    hasErrors = true;
+                    if (!propertyName) {
+                        $(this).find('.ctgf-property-name').addClass('error');
+                    }
+                    if (!formField) {
+                        $(this).find('.ctgf-form-field').addClass('error');
+                    }
+                }
+            });
+            
+            if (hasErrors) {
+                e.preventDefault();
+                alert('Please complete all property mappings or remove incomplete ones.');
+                return false;
+            }
+            
+            if (!hasValidMappings) {
+                e.preventDefault();
+                alert('Please either enter a tag or add at least one property mapping when CleverTap integration is enabled.');
                 return false;
             }
         }

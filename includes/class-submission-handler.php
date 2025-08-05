@@ -35,18 +35,39 @@ class CTGF_Submission_Handler {
             return;
         }
         
-        $this->send_to_clevertap($email, $config->tag, $form['id']);
+        $this->send_to_clevertap($email, $config, $entry, $form['id']);
     }
     
-    private function send_to_clevertap($email, $tag, $form_id) {
-        $this->log_debug('Sending to CleverTap - Email: ' . $email . ', Tag: ' . $tag . ', Form ID: ' . $form_id);
+    private function send_to_clevertap($email, $config, $entry, $form_id) {
+        $this->log_debug('Sending to CleverTap - Email: ' . $email . ', Form ID: ' . $form_id);
         
-        // Get the event name and profile key from the config
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'ctgf_form_configs';
-        $config = $wpdb->get_row($wpdb->prepare("SELECT event_name, profile_key FROM $table_name WHERE form_id = %d", $form_id));
-        $event_name = $config && !empty($config->event_name) ? $config->event_name : 'Newsletter Signup';
-        $profile_key = $config && !empty($config->profile_key) ? $config->profile_key : 'Form Signups';
+        $event_name = !empty($config->event_name) ? $config->event_name : 'Newsletter Signup';
+        
+        // Build properties from form data
+        $properties = array();
+        
+        // Add the tag if specified (legacy support)
+        if (!empty($config->tag)) {
+            $properties['Form Signups'] = array(
+                '$add' => array($config->tag)
+            );
+        }
+        
+        // Process property mappings
+        if (!empty($config->property_mappings)) {
+            $property_mappings = json_decode($config->property_mappings, true);
+            if (is_array($property_mappings)) {
+                foreach ($property_mappings as $mapping) {
+                    if (!empty($mapping['property_name']) && !empty($mapping['form_field'])) {
+                        $field_value = rgar($entry, $mapping['form_field']);
+                        if (!empty($field_value)) {
+                            $properties[$mapping['property_name']] = $field_value;
+                            $this->log_debug('Mapped property: ' . $mapping['property_name'] . ' = ' . $field_value);
+                        }
+                    }
+                }
+            }
+        }
         
         $api = new CTGF_CleverTap_API();
         
@@ -55,20 +76,27 @@ class CTGF_Submission_Handler {
             'identity' => $email // Use email as identity
         );
 
-        $success = $api->update_customer_attributes($email, $tag, $profile_key);
-        
-        if ($success) {
-            $this->log_debug('Successfully updated customer attributes');
+        // Send properties to CleverTap if we have any
+        $success = false;
+        if (!empty($properties)) {
+            $success = $api->update_customer_attributes($email, $properties);
+            
+            if ($success) {
+                $this->log_debug('Successfully updated customer attributes with ' . count($properties) . ' properties');
+            } else {
+                $this->log_debug('Failed to update customer attributes');
+            }
         } else {
-            $this->log_debug('Failed to update customer attributes');
+            $this->log_debug('No properties to send to CleverTap');
         }
         
         // Send event with delay (using wp_schedule_single_event for delay)
         $event_data = array(
-            'tag' => $tag,
+            'tag' => $config->tag,
             'form_id' => $form_id,
             'event_name' => $event_name,
-            'source' => 'gravity_forms'
+            'source' => 'gravity_forms',
+            'properties_sent' => count($properties)
         );
         
         wp_schedule_single_event(time() + 240, 'ctgf_send_delayed_event', array($user_data, $event_data)); // 4 minutes delay

@@ -85,7 +85,7 @@ function ctgf_activate() {
         email_field varchar(10) NOT NULL,
         tag varchar(255) NOT NULL,
         event_name varchar(255) NOT NULL DEFAULT 'Newsletter Signup',
-        profile_key varchar(255) NOT NULL DEFAULT 'Form Signups',
+        property_mappings TEXT,
         active tinyint(1) DEFAULT 1,
         created_at datetime DEFAULT CURRENT_TIMESTAMP,
         updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -102,9 +102,36 @@ function ctgf_activate() {
         $wpdb->query("ALTER TABLE $table_name ADD COLUMN event_name varchar(255) NOT NULL DEFAULT 'Newsletter Signup' AFTER tag");
     }
     
-    // Add profile_key column to existing installations
+    // Add property_mappings column to existing installations
+    $property_mappings_exists = $wpdb->get_results("SHOW COLUMNS FROM $table_name LIKE 'property_mappings'");
+    if (empty($property_mappings_exists)) {
+        $wpdb->query("ALTER TABLE $table_name ADD COLUMN property_mappings TEXT AFTER event_name");
+    }
+    
+    // Migrate existing profile_key data to property_mappings if needed
     $profile_key_exists = $wpdb->get_results("SHOW COLUMNS FROM $table_name LIKE 'profile_key'");
-    if (empty($profile_key_exists)) {
-        $wpdb->query("ALTER TABLE $table_name ADD COLUMN profile_key varchar(255) NOT NULL DEFAULT 'Form Signups' AFTER event_name");
+    if (!empty($profile_key_exists)) {
+        // Migrate existing profile_key configurations
+        $configs_with_profile_key = $wpdb->get_results("SELECT id, profile_key, tag FROM $table_name WHERE profile_key IS NOT NULL AND profile_key != ''");
+        foreach ($configs_with_profile_key as $config) {
+            if (!empty($config->tag)) {
+                $legacy_mapping = array(
+                    array(
+                        'property_name' => $config->profile_key,
+                        'form_field' => 'tag_legacy' // Special marker for legacy tag
+                    )
+                );
+                $wpdb->update(
+                    $table_name,
+                    array('property_mappings' => json_encode($legacy_mapping)),
+                    array('id' => $config->id),
+                    array('%s'),
+                    array('%d')
+                );
+            }
+        }
+        
+        // Remove the old profile_key column
+        $wpdb->query("ALTER TABLE $table_name DROP COLUMN profile_key");
     }
 }

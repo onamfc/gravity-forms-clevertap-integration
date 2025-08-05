@@ -10,7 +10,7 @@
 This plugin automatically sends user data from Gravity Forms submissions to [CleverTap](https://clevertap.com) as a **profile update** and **event** — without needing to manually add hooks for each form.
 
 When a user submits a form, the plugin:
-- Updates their **CleverTap profile** with a `$add` operation to the `Form Signups` field
+- Updates their **CleverTap profile** with custom properties mapped from form fields
 - Schedules a **custom event** (configurable per form) to fire **4 minutes later**
 
 ---
@@ -18,7 +18,8 @@ When a user submits a form, the plugin:
 ## Features
 
 - Zero-code setup for form-to-CleverTap syncing
-- Supports custom tag per form
+- Flexible property mapping - send any form field to CleverTap as a custom property
+- Supports legacy tag functionality for backward compatibility
 - Supports custom event name per form
 - Uses email as the unique identity
 - Deferred (delayed) event sending via WordPress cron
@@ -39,20 +40,21 @@ When a user submits a form, the plugin:
 
 ### 2. Form Mapping
 
-This plugin uses a table `wp_ctgf_form_configs` (or your custom prefix) to map:
+This plugin uses a table `wp_ctgf_form_configs` to store form configurations including:
 - `form_id`
 - `email_field` (the Gravity Forms field ID that holds the email address)
-- `tag` (value to send to CleverTap)
+- `tag` (legacy support - value to send to CleverTap as a tag)
 - `event_name` (custom event name to send to CleverTap)
+- `property_mappings` (JSON array of custom property mappings)
 - `active` (1 = enabled, 0 = disabled)
 
-Each row represents a form-to-tag mapping.
+Each row represents a complete form configuration.
 
-**Example Row:**
+**Example Configuration:**
 
-| form_id | email_field | tag          | event_name           | profile_key  | active |
-|---------|-------------|--------------|----------------------|--------------|--------|
-| 5       | 1           | Retreat 2025 | Retreat Registration | Form Signups | 1      |
+| form_id | email_field | tag          | event_name           | property_mappings                                                    | active |
+|---------|-------------|--------------|----------------------|----------------------------------------------------------------------|--------|
+| 5       | 1           | Retreat 2025 | Retreat Registration | `[{"property_name":"Phone","form_field":"3"},{"property_name":"Company","form_field":"4"}]` | 1      |
 
 ---
 
@@ -67,6 +69,8 @@ Each row represents a form-to-tag mapping.
       "identity": "user@example.com",
       "type": "profile",
       "profileData": {
+        "Phone": "+1234567890",
+        "Company": "Acme Corp",
         "Form Signups": {
           "$add": ["Retreat 2025"]
         }
@@ -76,7 +80,7 @@ Each row represents a form-to-tag mapping.
 }
 ```
 
-**Note:** The profile key ("Form Signups" in this example) is now configurable per form in the form settings.
+**Note:** You can now send any form field as a CleverTap property. The legacy tag functionality is still supported for backward compatibility.
 
 ### Event (Immediate & Delayed)
 
@@ -89,7 +93,8 @@ Each row represents a form-to-tag mapping.
       "evtName": "Retreat Registration",
       "evtData": {
         "tag": "Retreat 2025",
-        "form_id": 5
+        "form_id": 5,
+        "properties_sent": 3
       }
     }
   ]
@@ -101,10 +106,12 @@ Each row represents a form-to-tag mapping.
 ## Developer Notes
 
 - No manual hook setup needed (`gform_after_submission` is automatically handled)
+- Flexible property mapping system allows sending any form field to CleverTap
 - Supports delayed jobs via `wp_schedule_single_event`
 - Logging can be toggled with the `ctgf_enable_logging` option
 - Delayed jobs hook into `ctgf_send_delayed_event` with custom event names
-- Database schema automatically migrates to support custom event names
+- Database schema automatically migrates to support property mappings
+- Backward compatibility maintained for existing tag-based configurations
 
 ---
 

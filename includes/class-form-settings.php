@@ -62,8 +62,11 @@ class CTGF_Form_Settings {
         $email_field = $config ? $config->email_field : '';
         $tag = $config ? $config->tag : '';
         $event_name = $config ? $config->event_name : 'Newsletter Signup';
-        $profile_key = $config ? $config->profile_key : 'Form Signups';
         $active = $config ? $config->active : 0;
+        
+        // Get property mappings
+        $property_mappings = $config && !empty($config->property_mappings) ? 
+            json_decode($config->property_mappings, true) : array();
         
         // Check if global settings are configured
         $account_id = get_option('ctgf_account_id');
@@ -98,7 +101,7 @@ class CTGF_Form_Settings {
                                 <input type="checkbox" id="ctgf_active" name="ctgf_active" value="1" <?php checked($active, 1); ?> />
                                 <label for="ctgf_active">Enable CleverTap integration for this form</label>
                                 <span class="gform-settings-description">
-                                    When enabled, form submissions will be sent to CleverTap with the specified tag.
+                                    When enabled, form submissions will be sent to CleverTap with the specified configuration.
                                 </span>
                             </td>
                         </tr>
@@ -116,7 +119,7 @@ class CTGF_Form_Settings {
                                         <?php echo $this->get_email_field_options($form, $email_field); ?>
                                     </select>
                                     <span class="gform-settings-description">
-                                        Select the field that contains the user's email address.
+                                        Select the field that contains the user's email address (used as CleverTap identity).
                                     </span>
                                 </td>
                             </tr>
@@ -133,17 +136,6 @@ class CTGF_Form_Settings {
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <label for="ctgf_profile_key">Profile Key</label>
-                                </th>
-                                <td>
-                                    <input type="text" id="ctgf_profile_key" name="ctgf_profile_key" value="<?php echo esc_attr($profile_key); ?>" class="gform-settings-input__container" />
-                                    <span class="gform-settings-description">
-                                        The profile attribute name in CleverTap where tags will be added (e.g., "Form Signups", "Newsletter Tags", "Lead Sources").
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">
                                     <label for="ctgf_event_name">Event Name</label>
                                 </th>
                                 <td>
@@ -154,6 +146,51 @@ class CTGF_Form_Settings {
                                 </td>
                             </tr>
                         </table>
+                        
+                        <h4 style="margin-top: 30px; margin-bottom: 15px;">Property Mappings</h4>
+                        <p class="gform-settings-description" style="margin-bottom: 20px;">
+                            Map form fields to CleverTap profile properties. Each property will be sent to CleverTap when the form is submitted.
+                        </p>
+                        
+                        <div id="ctgf-property-mappings">
+                            <?php if (!empty($property_mappings)): ?>
+                                <?php foreach ($property_mappings as $index => $mapping): ?>
+                                    <div class="ctgf-property-mapping" data-index="<?php echo $index; ?>">
+                                        <table class="gforms_form_settings" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <th scope="row" style="width: 200px;">
+                                                    <label>Property Name</label>
+                                                </th>
+                                                <td style="width: 250px;">
+                                                    <input type="text" 
+                                                           name="ctgf_property_mappings[<?php echo $index; ?>][property_name]" 
+                                                           value="<?php echo esc_attr($mapping['property_name']); ?>" 
+                                                           class="gform-settings-input__container ctgf-property-name" 
+                                                           placeholder="e.g., Phone, Company, Source" />
+                                                </td>
+                                                <th scope="row" style="width: 150px;">
+                                                    <label>Form Field</label>
+                                                </th>
+                                                <td style="width: 250px;">
+                                                    <select name="ctgf_property_mappings[<?php echo $index; ?>][form_field]" 
+                                                            class="gform-settings-input__container ctgf-form-field">
+                                                        <option value="">Select Field</option>
+                                                        <?php echo $this->get_all_field_options($form, $mapping['form_field']); ?>
+                                                    </select>
+                                                </td>
+                                                <td style="width: 100px;">
+                                                    <button type="button" class="button ctgf-remove-mapping" style="color: #dc3232;">Remove</button>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <div style="margin-top: 15px;">
+                            <button type="button" id="ctgf-add-mapping" class="button">Add Property Mapping</button>
+                        </div>
                     </div>
                     
                     <div class="gform-settings-save-container">
@@ -191,13 +228,59 @@ class CTGF_Form_Settings {
                                 <th scope="row">Event Name</th>
                                 <td><?php echo esc_html($event_name); ?></td>
                             </tr>
-                            <tr>
-                                <th scope="row">Profile Key</th>
-                                <td><?php echo esc_html($profile_key); ?></td>
-                            </tr>
+                            <?php if (!empty($property_mappings)): ?>
+                                <tr>
+                                    <th scope="row">Property Mappings</th>
+                                    <td>
+                                        <?php foreach ($property_mappings as $mapping): ?>
+                                            <div style="margin-bottom: 5px;">
+                                                <strong><?php echo esc_html($mapping['property_name']); ?>:</strong> 
+                                                Field <?php echo esc_html($mapping['form_field']); ?>
+                                                <?php 
+                                                $field_label = $this->get_field_label($form, $mapping['form_field']);
+                                                if ($field_label) echo ' - ' . esc_html($field_label);
+                                                ?>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
                         </table>
                     </div>
                 <?php endif; ?>
+            </div>
+        </div>
+        
+        <!-- Property Mapping Template (hidden) -->
+        <div id="ctgf-property-mapping-template" style="display: none;">
+            <div class="ctgf-property-mapping" data-index="__INDEX__">
+                <table class="gforms_form_settings" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <th scope="row" style="width: 200px;">
+                            <label>Property Name</label>
+                        </th>
+                        <td style="width: 250px;">
+                            <input type="text" 
+                                   name="ctgf_property_mappings[__INDEX__][property_name]" 
+                                   value="" 
+                                   class="gform-settings-input__container ctgf-property-name" 
+                                   placeholder="e.g., Phone, Company, Source" />
+                        </td>
+                        <th scope="row" style="width: 150px;">
+                            <label>Form Field</label>
+                        </th>
+                        <td style="width: 250px;">
+                            <select name="ctgf_property_mappings[__INDEX__][form_field]" 
+                                    class="gform-settings-input__container ctgf-form-field">
+                                <option value="">Select Field</option>
+                                <?php echo $this->get_all_field_options($form, ''); ?>
+                            </select>
+                        </td>
+                        <td style="width: 100px;">
+                            <button type="button" class="button ctgf-remove-mapping" style="color: #dc3232;">Remove</button>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
         
@@ -228,16 +311,46 @@ class CTGF_Form_Settings {
         .ctgf-status-active {
             background-color: #46b450;
         }
+        .ctgf-property-mapping {
+            background: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .ctgf-property-mapping table {
+            margin: 0;
+        }
+        .ctgf-property-mapping th,
+        .ctgf-property-mapping td {
+            padding: 5px 10px 5px 0;
+            vertical-align: middle;
+        }
         </style>
         
         <script>
         jQuery(document).ready(function($) {
+            var mappingIndex = <?php echo !empty($property_mappings) ? max(array_keys($property_mappings)) + 1 : 0; ?>;
+            
             $('#ctgf_active').change(function() {
                 if ($(this).is(':checked')) {
                     $('.ctgf-config-fields').slideDown();
                 } else {
                     $('.ctgf-config-fields').slideUp();
                 }
+            });
+            
+            // Add new property mapping
+            $('#ctgf-add-mapping').click(function() {
+                var template = $('#ctgf-property-mapping-template').html();
+                var newMapping = template.replace(/__INDEX__/g, mappingIndex);
+                $('#ctgf-property-mappings').append(newMapping);
+                mappingIndex++;
+            });
+            
+            // Remove property mapping
+            $(document).on('click', '.ctgf-remove-mapping', function() {
+                $(this).closest('.ctgf-property-mapping').remove();
             });
         });
         </script>
@@ -270,6 +383,26 @@ class CTGF_Form_Settings {
     }
     
     /**
+     * Get all field options for property mapping
+     */
+    private function get_all_field_options($form, $selected_field) {
+        $options = '';
+        
+        foreach ($form['fields'] as $field) {
+            // Skip fields that don't make sense for CleverTap
+            if (in_array($field->type, array('section', 'page', 'html', 'captcha', 'fileupload'))) {
+                continue;
+            }
+            
+            $selected = selected($selected_field, $field->id, false);
+            $field_type = ucfirst($field->type);
+            $options .= '<option value="' . $field->id . '"' . $selected . '>Field ' . $field->id . ' - ' . esc_html($field->label) . ' (' . $field_type . ')</option>';
+        }
+        
+        return $options;
+    }
+    
+    /**
      * Get field label by ID
      */
     private function get_field_label($form, $field_id) {
@@ -292,7 +425,24 @@ class CTGF_Form_Settings {
         $email_field = sanitize_text_field($_POST['ctgf_email_field'] ?? '');
         $tag = sanitize_text_field($_POST['ctgf_tag'] ?? '');
         $event_name = sanitize_text_field($_POST['ctgf_event_name'] ?? 'Newsletter Signup');
-        $profile_key = sanitize_text_field($_POST['ctgf_profile_key'] ?? 'Form Signups');
+        
+        // Process property mappings
+        $property_mappings = array();
+        if (isset($_POST['ctgf_property_mappings']) && is_array($_POST['ctgf_property_mappings'])) {
+            foreach ($_POST['ctgf_property_mappings'] as $mapping) {
+                $property_name = sanitize_text_field($mapping['property_name'] ?? '');
+                $form_field = sanitize_text_field($mapping['form_field'] ?? '');
+                
+                if (!empty($property_name) && !empty($form_field)) {
+                    $property_mappings[] = array(
+                        'property_name' => $property_name,
+                        'form_field' => $form_field
+                    );
+                }
+            }
+        }
+        
+        $property_mappings_json = json_encode($property_mappings);
         
         // Check if config exists
         $existing = $wpdb->get_var($wpdb->prepare("SELECT id FROM $table_name WHERE form_id = %d", $form_id));
@@ -305,7 +455,7 @@ class CTGF_Form_Settings {
                     'email_field' => $email_field,
                     'tag' => $tag,
                     'event_name' => $event_name,
-                    'profile_key' => $profile_key,
+                    'property_mappings' => $property_mappings_json,
                     'active' => $active
                 ),
                 array('form_id' => $form_id),
@@ -321,7 +471,7 @@ class CTGF_Form_Settings {
                     'email_field' => $email_field,
                     'tag' => $tag,
                     'event_name' => $event_name,
-                    'profile_key' => $profile_key,
+                    'property_mappings' => $property_mappings_json,
                     'active' => $active
                 ),
                 array('%d', '%s', '%s', '%s', '%s', '%d')
