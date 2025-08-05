@@ -66,7 +66,11 @@ if (!defined('WP_PLUGIN_DIR')) {
 global $wpdb;
 $wpdb = new stdClass();
 $wpdb->prefix = 'wp_';
+$wpdb->last_error = '';
 $wpdb->prepare = function($query, ...$args) {
+    if (empty($args)) {
+        return $query;
+    }
     return vsprintf(str_replace('%s', "'%s'", str_replace('%d', '%d', $query)), $args);
 };
 $wpdb->get_row = function($query) {
@@ -95,6 +99,9 @@ $wpdb->update = function($table, $data, $where, $format, $where_format) {
 };
 $wpdb->query = function($query) {
     return true;
+};
+$wpdb->get_results = function($query) {
+    return array();
 };
 
 // Mock Gravity Forms classes

@@ -50,13 +50,13 @@ class CTGF_Form_Settings {
     public function form_settings_page() {
         $form_id = rgget('id');
         
-        if (!$form_id) {
+        if (!$form_id || !is_numeric($form_id)) {
             wp_die('Form ID is required');
         }
         
         $form = GFAPI::get_form($form_id);
         
-        if (!$form) {
+        if (!$form || !is_array($form)) {
             wp_die('Form not found');
         }
         
@@ -396,9 +396,14 @@ class CTGF_Form_Settings {
     private function get_email_field_options($form, $selected_field) {
         $options = '';
         
+        if (!is_array($form) || !isset($form['fields']) || !is_array($form['fields'])) {
+            return $options;
+        }
+        
         // First, add email fields
         foreach ($form['fields'] as $field) {
-            if ($field->type === 'email' || $field->inputType === 'email') {
+            if (isset($field->type) && isset($field->id) && isset($field->label) && 
+                ($field->type === 'email' || (isset($field->inputType) && $field->inputType === 'email'))) {
                 $selected = selected($selected_field, $field->id, false);
                 $options .= '<option value="' . $field->id . '"' . $selected . '>Field ' . $field->id . ' - ' . esc_html($field->label) . ' (Email)</option>';
             }
@@ -406,7 +411,8 @@ class CTGF_Form_Settings {
         
         // Also include text fields in case email is in a text field
         foreach ($form['fields'] as $field) {
-            if ($field->type === 'text' || $field->type === 'hidden') {
+            if (isset($field->type) && isset($field->id) && isset($field->label) && 
+                ($field->type === 'text' || $field->type === 'hidden')) {
                 $selected = selected($selected_field, $field->id, false);
                 $options .= '<option value="' . $field->id . '"' . $selected . '>Field ' . $field->id . ' - ' . esc_html($field->label) . ' (Text)</option>';
             }
@@ -421,9 +427,14 @@ class CTGF_Form_Settings {
     private function get_all_field_options($form, $selected_field) {
         $options = '';
         
+        if (!is_array($form) || !isset($form['fields']) || !is_array($form['fields'])) {
+            return $options;
+        }
+        
         foreach ($form['fields'] as $field) {
             // Skip fields that don't make sense for CleverTap
-            if (in_array($field->type, array('section', 'page', 'html', 'captcha', 'fileupload'))) {
+            if (!isset($field->type) || !isset($field->id) || !isset($field->label) || 
+                in_array($field->type, array('section', 'page', 'html', 'captcha', 'fileupload'))) {
                 continue;
             }
             
@@ -439,8 +450,12 @@ class CTGF_Form_Settings {
      * Get field label by ID
      */
     private function get_field_label($form, $field_id) {
+        if (!is_array($form) || !isset($form['fields']) || !is_array($form['fields'])) {
+            return '';
+        }
+        
         foreach ($form['fields'] as $field) {
-            if ($field->id == $field_id) {
+            if (isset($field->id) && $field->id == $field_id && isset($field->label)) {
                 return $field->label;
             }
         }
@@ -451,6 +466,10 @@ class CTGF_Form_Settings {
      * Save form settings immediately (called during page load)
      */
     private function save_form_settings_immediate($form_id) {
+        if (!is_numeric($form_id) || $form_id <= 0) {
+            return;
+        }
+        
         global $wpdb;
         $table_name = $wpdb->prefix . 'ctgf_form_configs';
         
@@ -458,6 +477,12 @@ class CTGF_Form_Settings {
         $email_field = sanitize_text_field($_POST['ctgf_email_field'] ?? '');
         $tag = sanitize_text_field($_POST['ctgf_tag'] ?? '');
         $event_name = sanitize_text_field($_POST['ctgf_event_name'] ?? 'Newsletter Signup');
+        
+        // Validate required fields when active
+        if ($active && (empty($email_field) || empty($event_name))) {
+            echo '<div class="notice notice-error is-dismissible" style="margin: 20px 0;"><p><strong>Error:</strong> Email field and event name are required when integration is enabled.</p></div>';
+            return;
+        }
         
         // Process property mappings
         $property_mappings = array();

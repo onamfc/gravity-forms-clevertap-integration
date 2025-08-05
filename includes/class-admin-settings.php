@@ -116,7 +116,14 @@ class CTGF_Admin_Settings {
         }
         
         $api = new CTGF_CleverTap_API();
-        $result = $api->test_connection();
+        
+        // Test with a simple profile update
+        $test_properties = array(
+            'Test Connection' => array(
+                '$add' => array('Plugin Test')
+            )
+        );
+        $result = $api->update_customer_profile('test@example.com', $test_properties);
         
         if ($result) {
             wp_send_json_success('Connection test passed');

@@ -23,9 +23,9 @@ class CTGF_CleverTap_API {
     }
 
     /**
-     * Update customer attributes with flexible properties
+     * Update customer attributes with flexible properties (main method)
      */
-    public function update_customer_attributes($email, $properties = array()) {
+    public function update_customer_profile($email, $properties = array()) {
         if (empty($this->account_id) || empty($this->passcode)) {
             error_log('CleverTap API credentials not configured');
             return false;
@@ -71,17 +71,23 @@ class CTGF_CleverTap_API {
         return false;
     }
 
-    /**
-     * Legacy method for backward compatibility
-     */
-    public function update_customer_tag($email, $tag_value, $profile_key = 'Form Signups') {
+    public function update_customer_attributes($email, $properties = array()) {
+        // Handle both old signature (email, tag) and new signature (email, properties_array)
+        if (is_string($properties)) {
+            // Legacy call: update_customer_attributes($email, $tag)
+            return $this->send_customer_tag($email, $properties);
+        }
+        return $this->update_customer_profile($email, $properties);
+    }
+
+    private function send_customer_tag($email, $tag_value, $profile_key = 'Form Signups') {
         $properties = array(
             $profile_key => array(
                 '$add' => array($tag_value)
             )
         );
         
-        return $this->update_customer_attributes($email, $properties);
+        return $this->update_customer_profile($email, $properties);
     }
 
     /**
@@ -150,9 +156,11 @@ class CTGF_CleverTap_API {
      * Test API connection
      */
     public function test_connection() {
-        $test_email = 'test@example.com';
-        $test_tag   = 'Test Tag';
-
-        return $this->update_customer_attributes($test_email, $test_tag);
+        $test_properties = array(
+            'Test Connection' => array(
+                '$add' => array('Plugin Test')
+            )
+        );
+        return $this->update_customer_profile('test@example.com', $test_properties);
     }
 }

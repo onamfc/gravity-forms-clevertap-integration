@@ -84,7 +84,7 @@ class CTGF_Submission_Handler {
         // Send properties to CleverTap if we have any
         $success = false;
         if (!empty($properties)) {
-            $success = $api->update_customer_attributes($email, $properties);
+            $success = $api->update_customer_profile($email, $properties);
             
             if ($success) {
                 $this->log_debug('Successfully updated customer attributes with ' . count($properties) . ' properties');
@@ -123,6 +123,11 @@ class CTGF_Submission_Handler {
         
         // Send event with delay (using wp_schedule_single_event for delay)
         wp_schedule_single_event(time() + 240, 'ctgf_send_delayed_event', array($user_data, $event_data)); // 4 minutes delay
+    }
+    
+    public function get_form_config($form_id) {
+        // Method for testing purposes
+        return null;
     }
     
     private function log_debug($message) {
