@@ -206,7 +206,7 @@ class CTGF_Form_Settings {
                             <button type="button" id="ctgf-add-mapping" class="button">Add Property Mapping</button>
                         </div>
                         
-                        <h4 style="margin-top: 30px; margin-bottom: 15px;">Event Data Mappings</h4>
+                        <h3 style="margin-top: 30px; margin-bottom: 15px;">Event Data Mappings</h3>
                         <p class="gform-settings-description" style="margin-bottom: 20px;">
                             Map form fields to custom event data that will be sent with the CleverTap event. This allows you to include additional context with your events.
                         </p>
