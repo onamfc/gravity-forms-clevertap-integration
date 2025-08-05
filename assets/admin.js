@@ -90,7 +90,13 @@ var CTGF_Admin = {
             }
         });
         
-        $(document).on('change', '.ctgf-form-field, .ctgf-event-form-field', function() {
+        $(document).on('input', '.ctgf-event-value', function() {
+            if ($(this).val().length > 0) {
+                $(this).removeClass('error');
+            }
+        });
+        
+        $(document).on('change', '.ctgf-form-field', function() {
             if ($(this).val().length > 0) {
                 $(this).removeClass('error');
             }

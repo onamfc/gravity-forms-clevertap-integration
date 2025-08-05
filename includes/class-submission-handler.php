@@ -110,12 +110,9 @@ class CTGF_Submission_Handler {
             $event_mappings = json_decode($config->event_mappings, true);
             if (is_array($event_mappings)) {
                 foreach ($event_mappings as $mapping) {
-                    if (!empty($mapping['event_key']) && !empty($mapping['form_field'])) {
-                        $field_value = rgar($entry, $mapping['form_field']);
-                        if (!empty($field_value)) {
-                            $event_data[$mapping['event_key']] = $field_value;
-                            $this->log_debug('Mapped event data: ' . $mapping['event_key'] . ' = ' . $field_value);
-                        }
+                    if (!empty($mapping['event_key']) && !empty($mapping['event_value'])) {
+                        $event_data[$mapping['event_key']] = $mapping['event_value'];
+                        $this->log_debug('Mapped event data: ' . $mapping['event_key'] . ' = ' . $mapping['event_value']);
                     }
                 }
             }

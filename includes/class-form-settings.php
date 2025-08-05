@@ -507,12 +507,12 @@ class CTGF_Form_Settings {
         if (isset($_POST['ctgf_event_mappings']) && is_array($_POST['ctgf_event_mappings'])) {
             foreach ($_POST['ctgf_event_mappings'] as $mapping) {
                 $event_key = sanitize_text_field($mapping['event_key'] ?? '');
-                $form_field = sanitize_text_field($mapping['form_field'] ?? '');
+                $event_value = sanitize_text_field($mapping['event_value'] ?? '');
                 
-                if (!empty($event_key) && !empty($form_field)) {
+                if (!empty($event_key) && !empty($event_value)) {
                     $event_mappings[] = array(
                         'event_key' => $event_key,
-                        'form_field' => $form_field
+                        'event_value' => $event_value
                     );
                 }
             }
