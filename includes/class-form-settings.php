@@ -317,7 +317,7 @@ class CTGF_Form_Settings {
                                                 if ($field_label) echo ' - ' . esc_html($field_label);
                                                 ?>
                                             </div>
-                                        <button type="button" class="button ctgf-remove-event-mapping">Remove</button>
+                                        <?php endforeach; ?>
                                     </td>
                                 </tr>
                             <?php endif; ?>
