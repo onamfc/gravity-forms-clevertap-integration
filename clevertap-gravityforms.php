@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CleverTap Gravity Forms Integration
  * Description: Integrates Gravity Forms with CleverTap for seamless user tracking and tagging
- * Version: 1.3.4
+ * Version: 1.3.5
  * Author: Brandon Estrella
  * Requires at least: 5.0
  * Tested up to: 6.4
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
 // Define plugin constants
 define('CTGF_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('CTGF_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('CTGF_VERSION', '1.3.4');
+define('CTGF_VERSION', '1.3.5');
 
 // Check if Gravity Forms is active
 add_action('admin_init', 'ctgf_check_gravity_forms');
