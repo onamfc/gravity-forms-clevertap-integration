@@ -10,6 +10,11 @@ if (!defined('ABSPATH')) {
 class CTGF_Form_Settings {
     
     public function __construct() {
+        // Only initialize if we're in admin
+        if (!is_admin()) {
+            return;
+        }
+        
         // Use modern Gravity Forms settings approach
         add_filter('gform_form_settings_menu', array($this, 'add_form_settings_menu'), 10, 2);
         add_action('gform_form_settings_page_clevertap', array($this, 'form_settings_page'));
@@ -44,6 +49,11 @@ class CTGF_Form_Settings {
      */
     public function form_settings_page() {
         $form_id = rgget('id');
+        
+        if (!$form_id) {
+            wp_die('Form ID is required');
+        }
+        
         $form = GFAPI::get_form($form_id);
         
         if (!$form) {

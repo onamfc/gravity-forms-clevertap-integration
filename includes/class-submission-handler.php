@@ -16,6 +16,11 @@ class CTGF_Submission_Handler {
     public function handle_submission($entry, $form) {
         global $wpdb;
         
+        if (!$form || !isset($form['id'])) {
+            $this->log_debug('Invalid form data provided');
+            return;
+        }
+        
         $table_name = $wpdb->prefix . 'ctgf_form_configs';
         $config = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE form_id = %d AND active = 1", $form['id']));
         

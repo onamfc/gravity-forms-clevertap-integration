@@ -16,7 +16,10 @@ class CTGF_CleverTap_API {
     public function __construct() {
         $this->account_id = get_option('ctgf_account_id', '');
         $this->passcode   = get_option('ctgf_passcode', '');
-        $this->api_url    = 'https://us1.api.clevertap.com/1/';
+        
+        // Set API URL based on region or use default
+        $api_region = get_option('ctgf_api_region', 'us1');
+        $this->api_url = 'https://' . $api_region . '.api.clevertap.com/1/';
     }
 
     /**

@@ -41,11 +41,22 @@ function ctgf_init() {
         return;
     }
     
-    // Include required files
-    require_once CTGF_PLUGIN_PATH . 'includes/class-clevertap-api.php';
-    require_once CTGF_PLUGIN_PATH . 'includes/class-admin-settings.php';
-    require_once CTGF_PLUGIN_PATH . 'includes/class-form-settings.php';
-    require_once CTGF_PLUGIN_PATH . 'includes/class-submission-handler.php';
+    // Include required files with error checking
+    $required_files = array(
+        'includes/class-clevertap-api.php',
+        'includes/class-admin-settings.php',
+        'includes/class-form-settings.php',
+        'includes/class-submission-handler.php'
+    );
+    
+    foreach ($required_files as $file) {
+        $file_path = CTGF_PLUGIN_PATH . $file;
+        if (!file_exists($file_path)) {
+            error_log('CleverTap GF Integration: Missing required file - ' . $file);
+            return;
+        }
+        require_once $file_path;
+    }
     
     // Initialize classes with proper timing
     if (is_admin()) {
@@ -98,28 +109,28 @@ function ctgf_activate() {
     dbDelta($sql);
     
     // Add event_name column to existing installations
-    $column_exists = $wpdb->get_results("SHOW COLUMNS FROM $table_name LIKE 'event_name'");
+    $column_exists = $wpdb->get_results($wpdb->prepare("SHOW COLUMNS FROM %i LIKE %s", $table_name, 'event_name'));
     if (empty($column_exists)) {
-        $wpdb->query("ALTER TABLE $table_name ADD COLUMN event_name varchar(255) NOT NULL DEFAULT 'Newsletter Signup' AFTER tag");
+        $wpdb->query($wpdb->prepare("ALTER TABLE %i ADD COLUMN event_name varchar(255) NOT NULL DEFAULT 'Newsletter Signup' AFTER tag", $table_name));
     }
     
     // Add property_mappings column to existing installations
-    $property_mappings_exists = $wpdb->get_results("SHOW COLUMNS FROM $table_name LIKE 'property_mappings'");
+    $property_mappings_exists = $wpdb->get_results($wpdb->prepare("SHOW COLUMNS FROM %i LIKE %s", $table_name, 'property_mappings'));
     if (empty($property_mappings_exists)) {
-        $wpdb->query("ALTER TABLE $table_name ADD COLUMN property_mappings TEXT AFTER event_name");
+        $wpdb->query($wpdb->prepare("ALTER TABLE %i ADD COLUMN property_mappings TEXT AFTER event_name", $table_name));
     }
     
     // Add event_mappings column to existing installations
-    $event_mappings_exists = $wpdb->get_results("SHOW COLUMNS FROM $table_name LIKE 'event_mappings'");
+    $event_mappings_exists = $wpdb->get_results($wpdb->prepare("SHOW COLUMNS FROM %i LIKE %s", $table_name, 'event_mappings'));
     if (empty($event_mappings_exists)) {
-        $wpdb->query("ALTER TABLE $table_name ADD COLUMN event_mappings TEXT AFTER property_mappings");
+        $wpdb->query($wpdb->prepare("ALTER TABLE %i ADD COLUMN event_mappings TEXT AFTER property_mappings", $table_name));
     }
     
     // Migrate existing profile_key data to property_mappings if needed
-    $profile_key_exists = $wpdb->get_results("SHOW COLUMNS FROM $table_name LIKE 'profile_key'");
+    $profile_key_exists = $wpdb->get_results($wpdb->prepare("SHOW COLUMNS FROM %i LIKE %s", $table_name, 'profile_key'));
     if (!empty($profile_key_exists)) {
         // Migrate existing profile_key configurations
-        $configs_with_profile_key = $wpdb->get_results("SELECT id, profile_key, tag FROM $table_name WHERE profile_key IS NOT NULL AND profile_key != ''");
+        $configs_with_profile_key = $wpdb->get_results($wpdb->prepare("SELECT id, profile_key, tag FROM %i WHERE profile_key IS NOT NULL AND profile_key != ''", $table_name));
         foreach ($configs_with_profile_key as $config) {
             if (!empty($config->tag)) {
                 $legacy_mapping = array(
@@ -139,6 +150,6 @@ function ctgf_activate() {
         }
         
         // Remove the old profile_key column
-        $wpdb->query("ALTER TABLE $table_name DROP COLUMN profile_key");
+        $wpdb->query($wpdb->prepare("ALTER TABLE %i DROP COLUMN profile_key", $table_name));
     }
 }
