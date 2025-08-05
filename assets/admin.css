@@ -242,6 +242,81 @@
     font-weight: 600;
     color: #23282d;
     font-size: 13px;
+    vertical-align: top;
+    padding-top: 12px;
+}
+
+/* Form Settings Tables - Better spacing and alignment */
+.gform-settings-panel .gforms_form_settings {
+    border-collapse: separate;
+    border-spacing: 0;
+    background: white;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.gform-settings-panel .gforms_form_settings th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #23282d;
+    padding: 20px 20px 20px 20px;
+    width: 200px;
+    border-bottom: 1px solid #e1e1e1;
+    vertical-align: top;
+    text-align: left;
+}
+
+.gform-settings-panel .gforms_form_settings td {
+    padding: 20px 20px 20px 20px;
+    border-bottom: 1px solid #e1e1e1;
+    vertical-align: top;
+}
+
+.gform-settings-panel .gforms_form_settings tr:last-child th,
+.gform-settings-panel .gforms_form_settings tr:last-child td {
+    border-bottom: none;
+}
+
+/* Input field styling within form settings */
+.gform-settings-panel .gform-settings-input__container {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background: white;
+    margin-bottom: 8px;
+}
+
+.gform-settings-panel .gform-settings-input__container:focus {
+    border-color: #0073aa;
+    box-shadow: 0 0 0 1px #0073aa;
+    outline: none;
+}
+
+/* Description text styling */
+.gform-settings-panel .gform-settings-description {
+    display: block;
+    margin-top: 8px;
+    font-style: italic;
+    color: #666;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+/* Checkbox styling improvements */
+.gform-settings-panel input[type="checkbox"] {
+    margin-right: 8px;
+    margin-top: 2px;
+}
+
+.gform-settings-panel label[for="ctgf_active"] {
+    font-weight: 500;
+    color: #23282d;
+    margin-bottom: 8px;
+    display: inline-block;
 }
 
 /* Add Mapping Buttons */
