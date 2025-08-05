@@ -228,14 +228,14 @@ class CTGF_Form_Settings {
                                                            placeholder="e.g., lead_source, campaign, referrer" />
                                                 </td>
                                                 <th scope="row" style="width: 150px;">
-                                                    <label>Form Field</label>
+                                                    <label>Value</label>
                                                 </th>
                                                 <td style="width: 250px;">
-                                                    <select name="ctgf_event_mappings[<?php echo $index; ?>][form_field]" 
-                                                            class="gform-settings-input__container ctgf-event-form-field">
-                                                        <option value="">Select Field</option>
-                                                        <?php echo $this->get_all_field_options($form, $mapping['form_field']); ?>
-                                                    </select>
+                                                    <input type="text" 
+                                                           name="ctgf_event_mappings[<?php echo $index; ?>][event_value]" 
+                                                           value="<?php echo esc_attr($mapping['event_value']); ?>" 
+                                                           class="gform-settings-input__container ctgf-event-value" 
+                                                           placeholder="e.g., Google Ads, Newsletter, Facebook" />
                                                 </td>
                                                 <td style="width: 100px;">
                                                     <button type="button" class="button ctgf-remove-event-mapping" style="color: #dc3232;">Remove</button>
