@@ -50,9 +50,9 @@ Each row represents a form-to-tag mapping.
 
 **Example Row:**
 
-| form_id | email_field | tag          | event_name           | active |
-|---------|-------------|--------------|----------------------|--------|
-| 5       | 1           | Retreat 2025 | Retreat Registration | 1      |
+| form_id | email_field | tag          | event_name           | profile_key  | active |
+|---------|-------------|--------------|----------------------|--------------|--------|
+| 5       | 1           | Retreat 2025 | Retreat Registration | Form Signups | 1      |
 
 ---
 
@@ -75,6 +75,8 @@ Each row represents a form-to-tag mapping.
   ]
 }
 ```
+
+**Note:** The profile key ("Form Signups" in this example) is now configurable per form in the form settings.
 
 ### Event (Immediate & Delayed)
 

@@ -40,16 +40,25 @@ jQuery(document).ready(function($) {
         }
     });
     
+    // Profile key input validation
+    $('#ctgf_profile_key').on('input', function() {
+        var profileKey = $(this).val();
+        if (profileKey.length > 0) {
+            $(this).removeClass('error');
+        }
+    });
+    
     // Form submission validation
     $('form').submit(function(e) {
         if ($('#ctgf_active').is(':checked')) {
             var emailField = $('#ctgf_email_field').val();
             var tag = $('#ctgf_tag').val();
             var eventName = $('#ctgf_event_name').val();
+            var profileKey = $('#ctgf_profile_key').val();
             
-            if (!emailField || !tag || !eventName) {
+            if (!emailField || !tag || !eventName || !profileKey) {
                 e.preventDefault();
-                alert('Please select an email field, enter a tag, and specify an event name when CleverTap integration is enabled.');
+                alert('Please select an email field, enter a tag, specify an event name, and enter a profile key when CleverTap integration is enabled.');
                 return false;
             }
         }

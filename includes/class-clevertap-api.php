@@ -22,7 +22,7 @@ class CTGF_CleverTap_API {
     /**
      * Update customer attributes
      */
-    public function update_customer_attributes($email, $tag_value) {
+    public function update_customer_attributes($email, $tag_value, $profile_key = 'Form Signups') {
         if (empty($this->account_id) || empty($this->passcode)) {
             error_log('CleverTap API credentials not configured');
             return false;
@@ -36,7 +36,7 @@ class CTGF_CleverTap_API {
                     'identity'    => $email,
                     'type'        => 'profile',
                     'profileData' => array(
-                        'Form Signups' => array(
+                        $profile_key => array(
                             '$add' => array($tag_value)
                         )
                     )

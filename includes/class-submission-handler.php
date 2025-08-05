@@ -41,11 +41,12 @@ class CTGF_Submission_Handler {
     private function send_to_clevertap($email, $tag, $form_id) {
         $this->log_debug('Sending to CleverTap - Email: ' . $email . ', Tag: ' . $tag . ', Form ID: ' . $form_id);
         
-        // Get the event name from the config
+        // Get the event name and profile key from the config
         global $wpdb;
         $table_name = $wpdb->prefix . 'ctgf_form_configs';
-        $config = $wpdb->get_row($wpdb->prepare("SELECT event_name FROM $table_name WHERE form_id = %d", $form_id));
+        $config = $wpdb->get_row($wpdb->prepare("SELECT event_name, profile_key FROM $table_name WHERE form_id = %d", $form_id));
         $event_name = $config && !empty($config->event_name) ? $config->event_name : 'Newsletter Signup';
+        $profile_key = $config && !empty($config->profile_key) ? $config->profile_key : 'Form Signups';
         
         $api = new CTGF_CleverTap_API();
         
@@ -54,7 +55,7 @@ class CTGF_Submission_Handler {
             'identity' => $email // Use email as identity
         );
 
-        $success = $api->update_customer_attributes($email, $tag);
+        $success = $api->update_customer_attributes($email, $tag, $profile_key);
         
         if ($success) {
             $this->log_debug('Successfully updated customer attributes');

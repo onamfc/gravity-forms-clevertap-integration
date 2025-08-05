@@ -62,6 +62,7 @@ class CTGF_Form_Settings {
         $email_field = $config ? $config->email_field : '';
         $tag = $config ? $config->tag : '';
         $event_name = $config ? $config->event_name : 'Newsletter Signup';
+        $profile_key = $config ? $config->profile_key : 'Form Signups';
         $active = $config ? $config->active : 0;
         
         // Check if global settings are configured
@@ -132,6 +133,17 @@ class CTGF_Form_Settings {
                             </tr>
                             <tr>
                                 <th scope="row">
+                                    <label for="ctgf_profile_key">Profile Key</label>
+                                </th>
+                                <td>
+                                    <input type="text" id="ctgf_profile_key" name="ctgf_profile_key" value="<?php echo esc_attr($profile_key); ?>" class="gform-settings-input__container" />
+                                    <span class="gform-settings-description">
+                                        The profile attribute name in CleverTap where tags will be added (e.g., "Form Signups", "Newsletter Tags", "Lead Sources").
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
                                     <label for="ctgf_event_name">Event Name</label>
                                 </th>
                                 <td>
@@ -178,6 +190,10 @@ class CTGF_Form_Settings {
                             <tr>
                                 <th scope="row">Event Name</th>
                                 <td><?php echo esc_html($event_name); ?></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Profile Key</th>
+                                <td><?php echo esc_html($profile_key); ?></td>
                             </tr>
                         </table>
                     </div>
@@ -276,6 +292,7 @@ class CTGF_Form_Settings {
         $email_field = sanitize_text_field($_POST['ctgf_email_field'] ?? '');
         $tag = sanitize_text_field($_POST['ctgf_tag'] ?? '');
         $event_name = sanitize_text_field($_POST['ctgf_event_name'] ?? 'Newsletter Signup');
+        $profile_key = sanitize_text_field($_POST['ctgf_profile_key'] ?? 'Form Signups');
         
         // Check if config exists
         $existing = $wpdb->get_var($wpdb->prepare("SELECT id FROM $table_name WHERE form_id = %d", $form_id));
@@ -288,10 +305,11 @@ class CTGF_Form_Settings {
                     'email_field' => $email_field,
                     'tag' => $tag,
                     'event_name' => $event_name,
+                    'profile_key' => $profile_key,
                     'active' => $active
                 ),
                 array('form_id' => $form_id),
-                array('%s', '%s', '%s', '%d'),
+                array('%s', '%s', '%s', '%s', '%d'),
                 array('%d')
             );
         } else {
@@ -303,9 +321,10 @@ class CTGF_Form_Settings {
                     'email_field' => $email_field,
                     'tag' => $tag,
                     'event_name' => $event_name,
+                    'profile_key' => $profile_key,
                     'active' => $active
                 ),
-                array('%d', '%s', '%s', '%s', '%d')
+                array('%d', '%s', '%s', '%s', '%s', '%d')
             );
         }
         
