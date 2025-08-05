@@ -192,7 +192,7 @@ class CTGF_Form_Settings {
                             <?php endif; ?>
                         </div>
                         
-                        <div style="margin-top: 15px;">
+                        <div class="ctgf-add-mapping-button-container">
                             <button type="button" id="ctgf-add-mapping" class="button">Add Property Mapping</button>
                         </div>
                         
@@ -237,7 +237,7 @@ class CTGF_Form_Settings {
                             <?php endif; ?>
                         </div>
                         
-                        <div style="margin-top: 15px;">
+                        <div class="ctgf-add-mapping-button-container">
                             <button type="button" id="ctgf-add-event-mapping" class="button">Add Event Data Mapping</button>
                         </div>
                     </div>
@@ -250,7 +250,7 @@ class CTGF_Form_Settings {
                 </form>
                 
                 <?php if ($config && $active): ?>
-                    <div class="gform-settings-panel__content" style="margin-top: 20px;">
+                    <div class="gform-settings-panel__content ctgf-current-config" style="margin-top: 20px;">
                         <h4>Current Configuration</h4>
                         <table class="gforms_form_settings" cellspacing="0" cellpadding="0">
                             <tr>
@@ -282,7 +282,7 @@ class CTGF_Form_Settings {
                                     <th scope="row">Property Mappings</th>
                                     <td>
                                         <?php foreach ($property_mappings as $mapping): ?>
-                                            <div style="margin-bottom: 5px;">
+                                            <div class="ctgf-mapping-summary-item">
                                                 <strong><?php echo esc_html($mapping['property_name']); ?>:</strong> 
                                                 Field <?php echo esc_html($mapping['form_field']); ?>
                                                 <?php 
@@ -299,7 +299,7 @@ class CTGF_Form_Settings {
                                     <th scope="row">Event Data Mappings</th>
                                     <td>
                                         <?php foreach ($event_mappings as $mapping): ?>
-                                            <div style="margin-bottom: 5px;">
+                                            <div class="ctgf-mapping-summary-item">
                                                 <strong><?php echo esc_html($mapping['event_key']); ?>:</strong> 
                                                 Field <?php echo esc_html($mapping['form_field']); ?>
                                                 <?php 
@@ -307,7 +307,7 @@ class CTGF_Form_Settings {
                                                 if ($field_label) echo ' - ' . esc_html($field_label);
                                                 ?>
                                             </div>
-                                        <?php endforeach; ?>
+                                        <button type="button" class="button ctgf-remove-event-mapping">Remove</button>
                                     </td>
                                 </tr>
                             <?php endif; ?>
@@ -317,155 +317,65 @@ class CTGF_Form_Settings {
             </div>
         </div>
         
-        <!-- Property Mapping Template (hidden) -->
+        <!-- Templates for dynamic mappings -->
         <div id="ctgf-property-mapping-template" style="display: none;">
             <div class="ctgf-property-mapping" data-index="__INDEX__">
-                <table class="gforms_form_settings" cellspacing="0" cellpadding="0">
-                    <tr>
-                        <th scope="row" style="width: 200px;">
-                            <label>Property Name</label>
-                        </th>
-                        <td style="width: 250px;">
-                            <input type="text" 
-                                   name="ctgf_property_mappings[__INDEX__][property_name]" 
-                                   value="" 
-                                   class="gform-settings-input__container ctgf-property-name" 
-                                   placeholder="e.g., Phone, Company, Source" />
-                        </td>
-                        <th scope="row" style="width: 150px;">
-                            <label>Form Field</label>
-                        </th>
-                        <td style="width: 250px;">
-                            <select name="ctgf_property_mappings[__INDEX__][form_field]" 
-                                    class="gform-settings-input__container ctgf-form-field">
-                                <option value="">Select Field</option>
-                                <?php echo $this->get_all_field_options($form, ''); ?>
-                            </select>
-                        </td>
-                        <td style="width: 100px;">
-                            <button type="button" class="button ctgf-remove-mapping" style="color: #dc3232;">Remove</button>
-                        </td>
-                    </tr>
-                </table>
+                <div class="ctgf-mapping-row">
+                    <div class="ctgf-mapping-field">
+                        <label>Property Name</label>
+                        <input type="text" 
+                               name="ctgf_property_mappings[__INDEX__][property_name]" 
+                               value="" 
+                               class="gform-settings-input__container ctgf-property-name" 
+                               placeholder="e.g., Phone, Company, Source" />
+                    </div>
+                    <div class="ctgf-mapping-field">
+                        <label>Form Field</label>
+                        <select name="ctgf_property_mappings[__INDEX__][form_field]" 
+                                class="gform-settings-input__container ctgf-form-field">
+                            <option value="">Select Field</option>
+                            <?php echo $this->get_all_field_options($form, ''); ?>
+                        </select>
+                    </div>
+                    <div class="ctgf-mapping-actions">
+                        <button type="button" class="button ctgf-remove-mapping">Remove</button>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <!-- Event Mapping Template (hidden) -->
         <div id="ctgf-event-mapping-template" style="display: none;">
             <div class="ctgf-event-mapping" data-index="__INDEX__">
-                <table class="gforms_form_settings" cellspacing="0" cellpadding="0">
-                    <tr>
-                        <th scope="row" style="width: 200px;">
-                            <label>Event Data Key</label>
-                        </th>
-                        <td style="width: 250px;">
-                            <input type="text" 
-                                   name="ctgf_event_mappings[__INDEX__][event_key]" 
-                                   value="" 
-                                   class="gform-settings-input__container ctgf-event-key" 
-                                   placeholder="e.g., lead_source, campaign, referrer" />
-                        </td>
-                        <th scope="row" style="width: 150px;">
-                            <label>Form Field</label>
-                        </th>
-                        <td style="width: 250px;">
-                            <select name="ctgf_event_mappings[__INDEX__][form_field]" 
-                                    class="gform-settings-input__container ctgf-event-form-field">
-                                <option value="">Select Field</option>
-                                <?php echo $this->get_all_field_options($form, ''); ?>
-                            </select>
-                        </td>
-                        <td style="width: 100px;">
-                            <button type="button" class="button ctgf-remove-event-mapping" style="color: #dc3232;">Remove</button>
-                        </td>
-                    </tr>
-                </table>
+                <div class="ctgf-mapping-row">
+                    <div class="ctgf-mapping-field">
+                        <label>Event Data Key</label>
+                        <input type="text" 
+                               name="ctgf_event_mappings[__INDEX__][event_key]" 
+                               value="" 
+                               class="gform-settings-input__container ctgf-event-key" 
+                               placeholder="e.g., lead_source, campaign, referrer" />
+                    </div>
+                    <div class="ctgf-mapping-field">
+                        <label>Form Field</label>
+                        <select name="ctgf_event_mappings[__INDEX__][form_field]" 
+                                class="gform-settings-input__container ctgf-event-form-field">
+                            <option value="">Select Field</option>
+                            <?php echo $this->get_all_field_options($form, ''); ?>
+                        </select>
+                    </div>
+                    <div class="ctgf-mapping-actions">
+                        <button type="button" class="button ctgf-remove-event-mapping">Remove</button>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <style>
-        .ctgf-config-fields {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-        }
-        .gform-settings-description {
-            display: block;
-            margin-top: 5px;
-            font-style: italic;
-            color: #666;
-        }
-        .gform-settings-save-container {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-        }
-        .ctgf-status-indicator {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-        .ctgf-status-active {
-            background-color: #46b450;
-        }
-        .ctgf-property-mapping {
-            background: #f9f9f9;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 3px;
-        }
-        .ctgf-property-mapping table {
-            margin: 0;
-        }
-        .ctgf-property-mapping th,
-        .ctgf-property-mapping td {
-            padding: 5px 10px 5px 0;
-            vertical-align: middle;
-        }
-        </style>
-        
         <script>
-        jQuery(document).ready(function($) {
-            var mappingIndex = <?php echo !empty($property_mappings) ? max(array_keys($property_mappings)) + 1 : 0; ?>;
-            var eventMappingIndex = <?php echo !empty($event_mappings) ? max(array_keys($event_mappings)) + 1 : 0; ?>;
-            
-            $('#ctgf_active').change(function() {
-                if ($(this).is(':checked')) {
-                    $('.ctgf-config-fields').slideDown();
-                } else {
-                    $('.ctgf-config-fields').slideUp();
-                }
-            });
-            
-            // Add new property mapping
-            $('#ctgf-add-mapping').click(function() {
-                var template = $('#ctgf-property-mapping-template').html();
-                var newMapping = template.replace(/__INDEX__/g, mappingIndex);
-                $('#ctgf-property-mappings').append(newMapping);
-                mappingIndex++;
-            });
-            
-            // Remove property mapping
-            $(document).on('click', '.ctgf-remove-mapping', function() {
-                $(this).closest('.ctgf-property-mapping').remove();
-            });
-            
-            // Add new event mapping
-            $('#ctgf-add-event-mapping').click(function() {
-                var template = $('#ctgf-event-mapping-template').html();
-                var newMapping = template.replace(/__INDEX__/g, eventMappingIndex);
-                $('#ctgf-event-mappings').append(newMapping);
-                eventMappingIndex++;
-            });
-            
-            // Remove event mapping
-            $(document).on('click', '.ctgf-remove-event-mapping', function() {
-                $(this).closest('.ctgf-event-mapping').remove();
-            });
-        });
+        // Initialize form settings with mapping indices
+        var ctgfForm = {
+            mappingIndex: <?php echo !empty($property_mappings) ? max(array_keys($property_mappings)) + 1 : 0; ?>,
+            eventMappingIndex: <?php echo !empty($event_mappings) ? max(array_keys($event_mappings)) + 1 : 0; ?>
+        };
         </script>
         <?php
     }

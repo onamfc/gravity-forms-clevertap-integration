@@ -1,31 +1,126 @@
 /* Admin Styles for CleverTap Gravity Forms Integration */
 
-.ctgf-settings-page {
-    max-width: 800px;
+/* Global Admin Settings Page */
+.ctgf-admin-wrap {
+    max-width: 900px;
+    background: #fff;
+    padding: 30px;
+    margin: 20px 0;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.ctgf-test-result {
+.ctgf-admin-wrap h1 {
+    color: #23282d;
+    font-size: 24px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #0073aa;
+}
+
+.ctgf-admin-wrap h2 {
+    color: #23282d;
+    font-size: 20px;
+    margin: 30px 0 15px 0;
+    padding-top: 20px;
+    border-top: 1px solid #e1e1e1;
+}
+
+.ctgf-admin-wrap .form-table {
+    background: #fff;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.ctgf-admin-wrap .form-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #23282d;
+    padding: 15px 20px;
+    width: 200px;
+    border-bottom: 1px solid #e1e1e1;
+}
+
+.ctgf-admin-wrap .form-table td {
+    padding: 15px 20px;
+    border-bottom: 1px solid #e1e1e1;
+}
+
+.ctgf-admin-wrap .form-table input[type="text"],
+.ctgf-admin-wrap .form-table input[type="password"] {
+    width: 100%;
+    max-width: 400px;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.ctgf-admin-wrap .form-table input[type="text"]:focus,
+.ctgf-admin-wrap .form-table input[type="password"]:focus {
+    border-color: #0073aa;
+    box-shadow: 0 0 0 1px #0073aa;
+    outline: none;
+}
+
+.ctgf-admin-wrap .description {
+    color: #666;
+    font-style: italic;
+    margin-top: 5px;
+    font-size: 13px;
+}
+
+.ctgf-admin-wrap #ctgf-test-connection {
+    background: #0073aa;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
     margin-top: 10px;
 }
 
-.ctgf-form-settings {
-    background: #f9f9f9;
-    padding: 20px;
-    border-radius: 5px;
+.ctgf-admin-wrap #ctgf-test-connection:hover {
+    background: #005a87;
+}
+
+.ctgf-admin-wrap #ctgf-test-connection:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.ctgf-admin-wrap #ctgf-test-result {
+    margin-top: 15px;
+}
+
+.ctgf-admin-wrap #ctgf-test-result .notice {
+    margin: 0;
+    padding: 12px;
+    border-radius: 4px;
+}
+
+/* Form Settings Page */
+.ctgf-config-fields {
     margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
 }
 
-.ctgf-form-settings h3 {
-    margin-top: 0;
-    color: #333;
+.gform-settings-description {
+    display: block;
+    margin-top: 5px;
+    font-style: italic;
+    color: #666;
+    font-size: 13px;
+    line-height: 1.4;
 }
 
-.ctgf-field-mapping {
-    background: #fff;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 3px;
-    margin-bottom: 15px;
+.gform-settings-save-container {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
 }
 
 .ctgf-status-indicator {
@@ -44,8 +139,238 @@
     background-color: #dc3232;
 }
 
+/* Property and Event Mappings */
+.ctgf-property-mapping,
+.ctgf-event-mapping {
+    background: #f8f9fa;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 1px solid #e1e1e1;
+    border-radius: 6px;
+    position: relative;
+}
+
+.ctgf-property-mapping:hover,
+.ctgf-event-mapping:hover {
+    border-color: #0073aa;
+    box-shadow: 0 2px 8px rgba(0, 115, 170, 0.1);
+}
+
+.ctgf-mapping-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.ctgf-mapping-field {
+    flex: 1;
+    min-width: 200px;
+}
+
+.ctgf-mapping-field label {
+    display: block;
+    font-weight: 600;
+    color: #23282d;
+    margin-bottom: 5px;
+    font-size: 13px;
+}
+
+.ctgf-mapping-field input,
+.ctgf-mapping-field select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background: white;
+}
+
+.ctgf-mapping-field input:focus,
+.ctgf-mapping-field select:focus {
+    border-color: #0073aa;
+    box-shadow: 0 0 0 1px #0073aa;
+    outline: none;
+}
+
+.ctgf-mapping-field input.error,
+.ctgf-mapping-field select.error {
+    border-color: #dc3232;
+    box-shadow: 0 0 0 1px #dc3232;
+}
+
+.ctgf-mapping-actions {
+    flex-shrink: 0;
+}
+
+.ctgf-remove-mapping,
+.ctgf-remove-event-mapping {
+    background: #dc3232;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    height: 36px;
+}
+
+.ctgf-remove-mapping:hover,
+.ctgf-remove-event-mapping:hover {
+    background: #a00;
+}
+
+/* Legacy table-based mappings (for existing mappings) */
+.ctgf-property-mapping table,
+.ctgf-event-mapping table {
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+}
+
+.ctgf-property-mapping th,
+.ctgf-property-mapping td,
+.ctgf-event-mapping th,
+.ctgf-event-mapping td {
+    padding: 8px 10px;
+    vertical-align: middle;
+    border: none;
+}
+
+.ctgf-property-mapping th,
+.ctgf-event-mapping th {
+    font-weight: 600;
+    color: #23282d;
+    font-size: 13px;
+}
+
+/* Add Mapping Buttons */
+.ctgf-add-mapping-button-container {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e1e1e1;
+}
+
+#ctgf-add-mapping,
+#ctgf-add-event-mapping {
+    background: #0073aa;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#ctgf-add-mapping:hover,
+#ctgf-add-event-mapping:hover {
+    background: #005a87;
+}
+
+/* Current Configuration Summary */
+.ctgf-current-config {
+    background: #f8f9fa;
+    border: 1px solid #e1e1e1;
+    border-radius: 6px;
+    padding: 20px;
+}
+
+.ctgf-current-config h4 {
+    color: #23282d;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.ctgf-current-config .gforms_form_settings {
+    background: white;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.ctgf-current-config .gforms_form_settings th {
+    background: #f1f1f1;
+    font-weight: 600;
+    color: #23282d;
+    padding: 12px 15px;
+    border-bottom: 1px solid #e1e1e1;
+}
+
+.ctgf-current-config .gforms_form_settings td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e1e1e1;
+}
+
+.ctgf-mapping-summary-item {
+    margin-bottom: 8px;
+    padding: 6px 10px;
+    background: #f8f9fa;
+    border-radius: 3px;
+    font-size: 13px;
+}
+
+.ctgf-mapping-summary-item:last-child {
+    margin-bottom: 0;
+}
+
+.ctgf-mapping-summary-item strong {
+    color: #0073aa;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .ctgf-mapping-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .ctgf-mapping-field {
+        min-width: auto;
+    }
+    
+    .ctgf-mapping-actions {
+        align-self: flex-start;
+    }
+    
+    .ctgf-admin-wrap {
+        margin: 10px;
+        padding: 20px;
+    }
+}
+
+/* Help Text */
 .ctgf-help-text {
     font-style: italic;
     color: #666;
     margin-top: 5px;
+    font-size: 13px;
+}
+
+/* Notices within the plugin */
+.ctgf-admin-wrap .notice,
+.gform-settings-panel .notice {
+    margin: 15px 0;
+    padding: 12px;
+    border-radius: 4px;
+}
+
+.ctgf-admin-wrap .notice p,
+.gform-settings-panel .notice p {
+    margin: 0;
+}
+
+/* Form validation states */
+.gform-settings-input__container.error {
+    border-color: #dc3232 !important;
+    box-shadow: 0 0 0 1px #dc3232 !important;
+}
+
+/* Section headings */
+.ctgf-section-title {
+    color: #23282d;
+    font-size: 18px;
+    margin: 25px 0 15px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e1e1e1;
 }

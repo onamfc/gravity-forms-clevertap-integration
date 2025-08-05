@@ -1,143 +1,185 @@
 /* Admin JavaScript for CleverTap Gravity Forms Integration */
 
-jQuery(document).ready(function($) {
-    // Form settings page functionality
-    $('#ctgf_active').change(function() {
-        if ($(this).is(':checked')) {
-            $('.ctgf-config-fields').show();
-        } else {
-            $('.ctgf-config-fields').hide();
-        }
-    });
+// Global CTGF Admin object
+var CTGF_Admin = {
     
-    // Initialize form settings visibility
-    if (!$('#ctgf_active').is(':checked')) {
-        $('.ctgf-config-fields').hide();
-    }
-    
-    // Email field validation
-    $('#ctgf_email_field').change(function() {
-        var fieldId = $(this).val();
-        if (fieldId) {
-            // You could add AJAX validation here if needed
-            console.log('Selected email field: ' + fieldId);
-        }
-    });
-    
-    // Tag input validation
-    $('#ctgf_tag').on('input', function() {
-        var tag = $(this).val();
-        if (tag.length > 0) {
-            $(this).removeClass('error');
-        }
-    });
-    
-    // Event name input validation
-    $('#ctgf_event_name').on('input', function() {
-        var eventName = $(this).val();
-        if (eventName.length > 0) {
-            $(this).removeClass('error');
-        }
-    });
-    
-    // Property mapping validation
-    $(document).on('input', '.ctgf-property-name', function() {
-        var propertyName = $(this).val();
-        if (propertyName.length > 0) {
-            $(this).removeClass('error');
-        }
-    });
-    
-    $(document).on('change', '.ctgf-form-field', function() {
-        var formField = $(this).val();
-        if (formField.length > 0) {
-            $(this).removeClass('error');
-        }
-    });
-    
-    // Event mapping validation
-    $(document).on('input', '.ctgf-event-key', function() {
-        var eventKey = $(this).val();
-        if (eventKey.length > 0) {
-            $(this).removeClass('error');
-        }
-    });
-    
-    $(document).on('change', '.ctgf-event-form-field', function() {
-        var formField = $(this).val();
-        if (formField.length > 0) {
-            $(this).removeClass('error');
-        }
-    });
-    
-    // Form submission validation
-    $('form').submit(function(e) {
-        if ($('#ctgf_active').is(':checked')) {
-            var emailField = $('#ctgf_email_field').val();
-            var eventName = $('#ctgf_event_name').val();
-            var hasValidMappings = false;
-            var hasErrors = false;
+    // Initialize admin settings page functionality
+    initAdminSettingsPage: function() {
+        var $ = jQuery;
+        
+        $('#ctgf-test-connection').click(function() {
+            var button = $(this);
+            var result = $('#ctgf-test-result');
             
-            if (!emailField || !eventName) {
-                e.preventDefault();
-                alert('Please select an email field and specify an event name when CleverTap integration is enabled.');
-                return false;
-            }
+            button.prop('disabled', true).text('Testing...');
+            result.html('');
             
-            // Check if we have at least one valid property mapping or a tag
-            var tag = $('#ctgf_tag').val();
-            if (tag) {
-                hasValidMappings = true;
-            }
-            
-            $('.ctgf-property-mapping').each(function() {
-                var propertyName = $(this).find('.ctgf-property-name').val();
-                var formField = $(this).find('.ctgf-form-field').val();
-                
-                if (propertyName && formField) {
-                    hasValidMappings = true;
-                } else if (propertyName || formField) {
-                    // Incomplete mapping
-                    hasErrors = true;
-                    if (!propertyName) {
-                        $(this).find('.ctgf-property-name').addClass('error');
+            $.ajax({
+                url: ctgfAdmin.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'ctgf_test_connection',
+                    nonce: ctgfAdmin.nonce
+                },
+                success: function(response) {
+                    if (response.success) {
+                        result.html('<div class="notice notice-success"><p>Connection successful!</p></div>');
+                    } else {
+                        result.html('<div class="notice notice-error"><p>Connection failed: ' + response.data + '</p></div>');
                     }
-                    if (!formField) {
-                        $(this).find('.ctgf-form-field').addClass('error');
-                    }
+                },
+                error: function() {
+                    result.html('<div class="notice notice-error"><p>Request failed</p></div>');
+                },
+                complete: function() {
+                    button.prop('disabled', false).text('Test Connection');
                 }
             });
-            
-            // Check event mappings for completeness
-            $('.ctgf-event-mapping').each(function() {
-                var eventKey = $(this).find('.ctgf-event-key').val();
-                var formField = $(this).find('.ctgf-event-form-field').val();
+        });
+    },
+    
+    // Initialize form settings page functionality
+    initFormSettingsPage: function(initialMappingIndex, initialEventMappingIndex) {
+        var $ = jQuery;
+        var mappingIndex = initialMappingIndex || 0;
+        var eventMappingIndex = initialEventMappingIndex || 0;
+        
+        // Toggle config fields visibility
+        $('#ctgf_active').change(function() {
+            if ($(this).is(':checked')) {
+                $('.ctgf-config-fields').slideDown();
+            } else {
+                $('.ctgf-config-fields').slideUp();
+            }
+        });
+        
+        // Add new property mapping
+        $('#ctgf-add-mapping').click(function() {
+            var template = $('#ctgf-property-mapping-template').html();
+            var newMapping = template.replace(/__INDEX__/g, mappingIndex);
+            $('#ctgf-property-mappings').append(newMapping);
+            mappingIndex++;
+        });
+        
+        // Remove property mapping
+        $(document).on('click', '.ctgf-remove-mapping', function() {
+            $(this).closest('.ctgf-property-mapping').fadeOut(300, function() {
+                $(this).remove();
+            });
+        });
+        
+        // Add new event mapping
+        $('#ctgf-add-event-mapping').click(function() {
+            var template = $('#ctgf-event-mapping-template').html();
+            var newMapping = template.replace(/__INDEX__/g, eventMappingIndex);
+            $('#ctgf-event-mappings').append(newMapping);
+            eventMappingIndex++;
+        });
+        
+        // Remove event mapping
+        $(document).on('click', '.ctgf-remove-event-mapping', function() {
+            $(this).closest('.ctgf-event-mapping').fadeOut(300, function() {
+                $(this).remove();
+            });
+        });
+        
+        // Input validation - remove error class on input
+        $(document).on('input', '.ctgf-property-name, .ctgf-event-key', function() {
+            if ($(this).val().length > 0) {
+                $(this).removeClass('error');
+            }
+        });
+        
+        $(document).on('change', '.ctgf-form-field, .ctgf-event-form-field', function() {
+            if ($(this).val().length > 0) {
+                $(this).removeClass('error');
+            }
+        });
+        
+        // Form submission validation
+        $('form').submit(function(e) {
+            if ($('#ctgf_active').is(':checked')) {
+                var emailField = $('#ctgf_email_field').val();
+                var eventName = $('#ctgf_event_name').val();
+                var hasValidMappings = false;
+                var hasErrors = false;
                 
-                if (eventKey || formField) {
-                    // If either field has a value, both must be filled
-                    if (!eventKey || !formField) {
+                // Check required fields
+                if (!emailField || !eventName) {
+                    e.preventDefault();
+                    alert('Please select an email field and specify an event name when CleverTap integration is enabled.');
+                    return false;
+                }
+                
+                // Check if we have at least one valid property mapping or a tag
+                var tag = $('#ctgf_tag').val();
+                if (tag) {
+                    hasValidMappings = true;
+                }
+                
+                // Validate property mappings
+                $('.ctgf-property-mapping').each(function() {
+                    var propertyName = $(this).find('.ctgf-property-name').val();
+                    var formField = $(this).find('.ctgf-form-field').val();
+                    
+                    if (propertyName && formField) {
+                        hasValidMappings = true;
+                    } else if (propertyName || formField) {
+                        // Incomplete mapping
                         hasErrors = true;
-                        if (!eventKey) {
-                            $(this).find('.ctgf-event-key').addClass('error');
+                        if (!propertyName) {
+                            $(this).find('.ctgf-property-name').addClass('error');
                         }
                         if (!formField) {
-                            $(this).find('.ctgf-event-form-field').addClass('error');
+                            $(this).find('.ctgf-form-field').addClass('error');
                         }
                     }
+                });
+                
+                // Validate event mappings
+                $('.ctgf-event-mapping').each(function() {
+                    var eventKey = $(this).find('.ctgf-event-key').val();
+                    var formField = $(this).find('.ctgf-event-form-field').val();
+                    
+                    if (eventKey || formField) {
+                        // If either field has a value, both must be filled
+                        if (!eventKey || !formField) {
+                            hasErrors = true;
+                            if (!eventKey) {
+                                $(this).find('.ctgf-event-key').addClass('error');
+                            }
+                            if (!formField) {
+                                $(this).find('.ctgf-event-form-field').addClass('error');
+                            }
+                        }
+                    }
+                });
+                
+                if (hasErrors) {
+                    e.preventDefault();
+                    alert('Please complete all property and event mappings or remove incomplete ones.');
+                    return false;
                 }
-            });
-            
-            if (hasErrors) {
-                e.preventDefault();
-                alert('Please complete all property and event mappings or remove incomplete ones.');
-                return false;
+                
+                if (!hasValidMappings) {
+                    e.preventDefault();
+                    alert('Please either enter a tag or add at least one property mapping when CleverTap integration is enabled.');
+                    return false;
+                }
             }
-            
-            if (!hasValidMappings) {
-                e.preventDefault();
-                alert('Please either enter a tag or add at least one property mapping when CleverTap integration is enabled.');
-                return false;
-            }
-        }
-    });
+        });
+    }
+};
+
+// Initialize appropriate functionality based on page context
+jQuery(document).ready(function($) {
+    // Check if we're on the admin settings page
+    if (typeof ctgfAdmin !== 'undefined') {
+        CTGF_Admin.initAdminSettingsPage();
+    }
+    
+    // Check if we're on the form settings page
+    if (typeof ctgfForm !== 'undefined') {
+        CTGF_Admin.initFormSettingsPage(ctgfForm.mappingIndex, ctgfForm.eventMappingIndex);
+    }
 });

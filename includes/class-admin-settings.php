@@ -34,6 +34,14 @@ class CTGF_Admin_Settings {
         }
         
         wp_enqueue_script('jquery');
+        wp_enqueue_script('ctgf-admin-js', CTGF_PLUGIN_URL . 'assets/admin.js', array('jquery'), CTGF_VERSION, true);
+        wp_enqueue_style('ctgf-admin-css', CTGF_PLUGIN_URL . 'assets/admin.css', array(), CTGF_VERSION);
+        
+        // Localize script for AJAX
+        wp_localize_script('ctgf-admin-js', 'ctgfAdmin', array(
+            'ajaxurl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('ctgf_test_connection')
+        ));
     }
     
     public function register_settings() {
@@ -49,7 +57,7 @@ class CTGF_Admin_Settings {
         }
         
         ?>
-        <div class="wrap">
+        <div class="wrap ctgf-admin-wrap">
             <h1>CleverTap Gravity Forms Integration</h1>
             
             <form method="post" action="options.php">
@@ -91,40 +99,6 @@ class CTGF_Admin_Settings {
             <p>Test your CleverTap API connection:</p>
             <button type="button" id="ctgf-test-connection" class="button">Test Connection</button>
             <div id="ctgf-test-result"></div>
-            
-            <script>
-            jQuery(document).ready(function($) {
-                $('#ctgf-test-connection').click(function() {
-                    var button = $(this);
-                    var result = $('#ctgf-test-result');
-                    
-                    button.prop('disabled', true).text('Testing...');
-                    result.html('');
-                    
-                    $.ajax({
-                        url: ajaxurl,
-                        type: 'POST',
-                        data: {
-                            action: 'ctgf_test_connection',
-                            nonce: '<?php echo wp_create_nonce('ctgf_test_connection'); ?>'
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                result.html('<div class="notice notice-success"><p>Connection successful!</p></div>');
-                            } else {
-                                result.html('<div class="notice notice-error"><p>Connection failed: ' + response.data + '</p></div>');
-                            }
-                        },
-                        error: function() {
-                            result.html('<div class="notice notice-error"><p>Request failed</p></div>');
-                        },
-                        complete: function() {
-                            button.prop('disabled', false).text('Test Connection');
-                        }
-                    });
-                });
-            });
-            </script>
         </div>
         <?php
     }
