@@ -311,11 +311,7 @@ class CTGF_Form_Settings {
                                         <?php foreach ($event_mappings as $mapping): ?>
                                             <div class="ctgf-mapping-summary-item">
                                                 <strong><?php echo esc_html($mapping['event_key']); ?>:</strong> 
-                                                Field <?php echo esc_html($mapping['form_field']); ?>
-                                                <?php 
-                                                $field_label = $this->get_field_label($form, $mapping['form_field']);
-                                                if ($field_label) echo ' - ' . esc_html($field_label);
-                                                ?>
+                                                <?php echo esc_html($mapping['event_value']); ?>
                                             </div>
                                         <?php endforeach; ?>
                                     </td>

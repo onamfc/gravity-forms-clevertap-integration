@@ -145,17 +145,17 @@ var CTGF_Admin = {
                 // Validate event mappings
                 $('.ctgf-event-mapping').each(function() {
                     var eventKey = $(this).find('.ctgf-event-key').val();
-                    var formField = $(this).find('.ctgf-event-form-field').val();
+                    var eventValue = $(this).find('.ctgf-event-value').val();
                     
-                    if (eventKey || formField) {
+                    if (eventKey || eventValue) {
                         // If either field has a value, both must be filled
-                        if (!eventKey || !formField) {
+                        if (!eventKey || !eventValue) {
                             hasErrors = true;
                             if (!eventKey) {
                                 $(this).find('.ctgf-event-key').addClass('error');
                             }
-                            if (!formField) {
-                                $(this).find('.ctgf-event-form-field').addClass('error');
+                            if (!eventValue) {
+                                $(this).find('.ctgf-event-value').addClass('error');
                             }
                         }
                     }
