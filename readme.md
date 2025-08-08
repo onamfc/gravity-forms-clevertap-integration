@@ -34,11 +34,41 @@ When a user submits a form, the plugin:
 1. Upload the plugin to your WordPress installation
 2. Navigate to **Settings > CleverTap Integration**
 3. Enter your:
-    - CleverTap Account ID
-    - CleverTap Passcode
-    - (Optional) Enable debug logging
+   - CleverTap Account ID
+   - CleverTap Passcode
+   - (Optional) Enable debug logging
 
-### 2. Form Mapping
+![Alt Text](./assets/screenshots/integration.png)
+
+### 2. Form Settings
+1. Open the form you would like to connect to CleverTap and select Settings -> CleverTap Integration
+2. Enable the integration for this form
+3. Select the email field from the form (This is used as the identity for the user in CleverTap)
+4. Set the name for the Tag. This will be sent as the value for a 'Form Signups' key in the user properties.
+5. Set the name for the Event. This is the event that you would like to trigger after the user properties have been updated.
+
+![Alt Text](./assets/screenshots/settings.png)
+
+
+
+### 3. Property Mapping
+**Map form fields to CleverTap profile properties. Each property will be sent to CleverTap when the form is submitted.**
+1. Click the "Add Property Mapping" button to add a new mapping
+2. Enter the property name and associate it with a field form
+
+![Alt Text](./assets/screenshots/property-mapping.png)
+
+
+### 4. Event Data Mapping
+**Map form fields to custom event data that will be sent with the CleverTap event. This allows you to include additional context with your events.**
+1. Click the "Add Event Data Mapping" button to add a new mapping
+2. Enter the data as a Key => Value pair. For example, campaign => Facebook
+
+![Alt Text](./assets/screenshots/event-mapping.png)
+
+---
+
+## Database
 
 This plugin uses a table `wp_ctgf_form_configs` to store form configurations including:
 - `form_id`
@@ -92,9 +122,8 @@ The table also includes:
 }
 ```
 
-**Note:** You can now send any form field as a CleverTap property. The legacy tag functionality is still supported for backward compatibility.
 
-### Event (Immediate & Delayed)
+### Event 
 
 ```json
 {
@@ -119,7 +148,6 @@ The table also includes:
 
 ## Developer Notes
 
-- No manual hook setup needed (`gform_after_submission` is automatically handled)
 - Flexible property mapping system allows sending any form field to CleverTap
 - Flexible event data mapping system allows sending custom event data
 - Supports delayed jobs via `wp_schedule_single_event`
@@ -127,7 +155,6 @@ The table also includes:
 - Delayed jobs hook into `ctgf_send_delayed_event` with custom event names
 - Database schema automatically migrates to support property mappings
 - Database schema automatically migrates to support event data mappings
-- Backward compatibility maintained for existing tag-based configurations
 
 ---
 
